@@ -1,4 +1,5 @@
 import assert from "node:assert/strict"
+import { createHash } from "node:crypto"
 import test from "node:test"
 
 import { Pool } from "pg"
@@ -27,9 +28,16 @@ async function request(base, path, options = {}) {
 test("plaza api", { skip: databaseUrl ? false : "DATABASE_URL not set" }, async () => {
   const pool = new Pool(poolConfig(databaseUrl))
   await migrate(pool)
-  await pool.query("DELETE FROM posts WHERE client_id = ANY($1::text[])", [
-    [clientA, clientB, clientC, clientD],
-  ])
+  const clients = [clientA, clientB, clientC, clientD]
+  const ipHashes = ["127.0.0.1", "::ffff:127.0.0.1", "::1"].map((ip) =>
+    createHash("sha256").update(ip).digest("hex"),
+  )
+  const clear = () =>
+    pool.query(
+      "DELETE FROM posts WHERE client_id = ANY($1::text[]) OR ip_hash = ANY($2::text[])",
+      [clients, ipHashes],
+    )
+  await clear()
   const server = createApp(pool)
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve))
   const address = server.address()
@@ -103,7 +111,7 @@ test("plaza api", { skip: databaseUrl ? false : "DATABASE_URL not set" }, async 
       false,
     )
 
-    await pool.query("DELETE FROM posts WHERE client_id = $1", [clientA])
+    await clear()
     for (let index = 0; index < 5; index += 1) {
       const ok = await request(base, "/api/posts", {
         method: "POST",
@@ -130,9 +138,7 @@ test("plaza api", { skip: databaseUrl ? false : "DATABASE_URL not set" }, async 
     assert.equal(limited.status, 429)
   } finally {
     await new Promise((resolve) => server.close(resolve))
-    await pool.query("DELETE FROM posts WHERE client_id = ANY($1::text[])", [
-      [clientA, clientB, clientC, clientD],
-    ])
+    await clear()
     await pool.end()
   }
 })
