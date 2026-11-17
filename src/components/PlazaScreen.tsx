@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
+import { WishWall } from "@/components/WishWall"
 import { getClientId } from "@/lib/client"
 import { formatRelative, toChineseNumber } from "@/lib/format"
 import { fetchPosts, reportPost, toggleLike, type PlazaPost } from "@/lib/plaza"
@@ -170,6 +171,8 @@ export function PlazaScreen() {
           别人做完签，把一小段故事挂在这里。像一排夜里的绘马。
         </p>
       </header>
+
+      <WishWall />
 
       {firstLoad ? (
         <div className="incense-loader" role="status">
