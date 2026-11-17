@@ -18,7 +18,8 @@ import { StorySheet } from "@/components/StorySheet"
 import { canDraw, isTestMode, phaseOf, surpriseIsReady } from "@/lib/draw"
 import { formatCountdown, msUntilLocalMidnight } from "@/lib/format"
 import { useApp } from "@/state/app-state"
-import { BellIcon } from "lucide-react"
+import { BellIcon, Share2 } from "lucide-react"
+import { toast } from "sonner"
 
 export function HomeScreen() {
   const {
@@ -86,15 +87,46 @@ export function HomeScreen() {
             让生活轻轻偏出原有的轨迹。不是占卜，只是一件可以留下小故事的小事。
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="icon-lg"
-          className="size-11 shrink-0"
-          aria-label="随缘时刻"
-          onClick={() => setSurpriseOpen(true)}
-        >
-          <BellIcon />
-        </Button>
+        <div className="flex shrink-0 items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon-lg"
+            className="size-11"
+            aria-label="分享时间盲盒"
+            onClick={async () => {
+              const url = window.location.href
+              if (navigator.share) {
+                try {
+                  await navigator.share({
+                    title: "时间盲盒",
+                    text: "抽一支小任务，让日子轻轻偏出原有的轨迹。",
+                    url,
+                  })
+                } catch {
+                  // The share sheet can be dismissed without taking action.
+                }
+                return
+              }
+              try {
+                await navigator.clipboard.writeText(url)
+                toast("链接已复制，可以分享给朋友")
+              } catch {
+                toast("请复制浏览器地址栏链接分享给朋友")
+              }
+            }}
+          >
+            <Share2 />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon-lg"
+            className="size-11"
+            aria-label="随缘时刻"
+            onClick={() => setSurpriseOpen(true)}
+          >
+            <BellIcon />
+          </Button>
+        </div>
       </header>
 
       {testMode ? (

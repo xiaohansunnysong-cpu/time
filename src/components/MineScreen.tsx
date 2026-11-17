@@ -165,7 +165,7 @@ function InstallHint({
         ) : (
           <p className="text-sm leading-relaxed text-muted-foreground">
             {ios
-              ? "在 Safari 里点分享，再选「添加到主屏幕」。"
+              ? "先在 Safari 打开此页，点「分享」→「添加到主屏幕」→「添加」。"
               : "用浏览器菜单里的「安装应用」或「添加到主屏幕」。"}
           </p>
         )}

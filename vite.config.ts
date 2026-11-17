@@ -20,7 +20,7 @@ export default defineConfig({
       manifest: {
         name: "时间盲盒",
         short_name: "时间盲盒",
-        description: "每天最多三签。一件小事，让日子轻轻偏出原轨迹。",
+        description: "抽一支日常小任务，让生活遇见一点新鲜。",
         lang: "zh-CN",
         start_url: "./",
         scope: "/",
@@ -49,7 +49,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
+        globPatterns: ["**/*.{js,css,html,svg,png,jpg,jpeg,webp,woff2}"],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
