@@ -349,7 +349,7 @@ const jewels = [
     "description": "遇到一位年龄相仿、穿白衣的异性，先问能否帮你录十秒。对方愿意再唱一句喜欢的歌；只录你自己，录完道谢。"
   },
   {
-    "category": "art",
+    "category": "create",
     "duration": 15,
     "verse": "一朵鸢尾，停住五分钟",
     "title": "和梵高的《鸢尾花》待五分钟",
@@ -384,7 +384,7 @@ const jewels = [
     "description": "挑一段你熟悉的电影经典台词，用原来的语气说给亲近的人听，让对方猜是哪部电影。猜错就揭晓答案。"
   },
   {
-    "category": "courage",
+    "category": "rule",
     "duration": 5,
     "verse": "说一次不，也是在选择",
     "title": "对一件不愿意的事说不",
