@@ -150,6 +150,143 @@
     var(--background);
 }
 
+
+
+.mystic-scene {
+  position: relative;
+  isolation: isolate;
+  height: clamp(18rem, 72vw, 21rem);
+  overflow: hidden;
+  border: 1px solid oklch(0.82 0.13 82 / 0.25);
+  border-radius: 1.35rem;
+  background: #192522;
+  box-shadow: 0 16px 40px oklch(0.08 0.03 255 / 0.35);
+}
+
+.mystic-scene-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 57%;
+  animation: scene-arrive 1.2s ease-out both;
+}
+
+.mystic-scene-shade {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background:
+    linear-gradient(180deg, oklch(0.1 0.08 160 / 0.36), transparent 28%, transparent 48%, oklch(0.08 0.04 250 / 0.84) 100%),
+    linear-gradient(90deg, oklch(0.1 0.04 160 / 0.18), transparent 70%);
+  pointer-events: none;
+}
+
+.mystic-scene-topline {
+  position: absolute;
+  z-index: 2;
+  top: .7rem;
+  right: .75rem;
+  left: .75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+}
+
+.scene-brand,
+.scene-time {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: .35rem;
+  border: 1px solid oklch(0.92 0.08 90 / .22);
+  border-radius: 999px;
+  background: oklch(0.11 0.04 160 / .48);
+  padding: .35rem .65rem;
+  color: #f3ead5;
+  font-size: .68rem;
+  letter-spacing: .08em;
+  backdrop-filter: blur(8px);
+}
+
+.scene-brand { color: #f4d98f; }
+.scene-time { white-space: nowrap; }
+
+.mystic-scene-bottom {
+  position: absolute;
+  z-index: 2;
+  right: .65rem;
+  bottom: .65rem;
+  left: .65rem;
+}
+
+.scene-title {
+  margin: 0 0 .45rem .25rem;
+  color: #fff3d8;
+  font-family: var(--font-heading, serif);
+  font-size: 1.08rem;
+  letter-spacing: .1em;
+  text-shadow: 0 2px 12px #111;
+}
+
+.almanac-panel {
+  border: 1px solid oklch(0.86 0.12 84 / .27);
+  border-radius: .9rem;
+  background: oklch(0.1 0.04 250 / .76);
+  padding: .55rem .7rem .48rem;
+  color: #eee5d2;
+  backdrop-filter: blur(12px);
+}
+
+.almanac-heading,
+.almanac-heading > span {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+
+.almanac-heading {
+  justify-content: space-between;
+  gap: .5rem;
+  color: #f0d585;
+  font-size: .68rem;
+  letter-spacing: .04em;
+}
+
+.almanac-heading > span:last-child {
+  color: #d5cfbd;
+  font-size: .65rem;
+  white-space: nowrap;
+}
+
+.almanac-guidance {
+  display: flex;
+  gap: 1rem;
+  margin-top: .42rem;
+  font-size: .72rem;
+}
+
+.almanac-guidance p { margin: 0; }
+.almanac-guidance b { margin-right: .35rem; color: #d6b85f; }
+
+.almanac-note {
+  margin: .35rem 0 0;
+  color: #9d9a8f;
+  font-size: .57rem;
+  letter-spacing: .04em;
+}
+
+@keyframes scene-arrive {
+  from { transform: scale(1.035); filter: saturate(.82); }
+  to { transform: scale(1); filter: saturate(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mystic-scene-image { animation: none; }
+}
+
 .grain {
   pointer-events: none;
   position: fixed;

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 
 import { FortuneTube } from "@/components/temple/FortuneTube"
 import { Incense } from "@/components/temple/Incense"
+import { MysticScene } from "@/components/temple/MysticScene"
 import { SlipCard } from "@/components/temple/SlipCard"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -102,6 +103,8 @@ export function HomeScreen() {
           <a className="min-h-10 inline-flex items-center rounded-full px-3 text-xs text-[#e8cb72] underline underline-offset-4" href={window.location.pathname}>退出测试</a>
         </div>
       ) : null}
+
+      <MysticScene now={now} />
 
       <Incense used={day.draws.length} />
 
