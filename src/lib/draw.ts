@@ -21,7 +21,7 @@ export function toSlip(challenge: Challenge) {
 }
 
 export function drawsRemaining(day: DayState): number {
-  return isTestMode() ? Number.POSITIVE_INFINITY : Math.max(0, DAILY_DRAW_LIMIT - day.draws.length)
+  return Math.max(0, DAILY_DRAW_LIMIT - day.draws.length)
 }
 
 export function canDraw(day: DayState): boolean {
