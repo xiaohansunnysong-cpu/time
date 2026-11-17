@@ -15,7 +15,7 @@ function Shell() {
   return (
     <div className="temple-root relative min-h-svh">
       <TempleAtmosphere />
-      <main className="relative z-10 mx-auto flex min-h-svh w-full max-w-md flex-col px-4 pt-6 pb-28">
+      <main className="relative z-10 mx-auto flex min-h-svh w-full max-w-md flex-col px-3 pt-[max(1.25rem,env(safe-area-inset-top))] pb-28 sm:px-4">
         {view === "draw" ? <HomeScreen /> : null}
         {view === "plaza" ? <PlazaScreen /> : null}
         {view === "log" ? <StoryScreen /> : null}
