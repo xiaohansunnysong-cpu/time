@@ -1,4 +1,9 @@
-import { FeatherIcon, FlameIcon, ScrollTextIcon } from "lucide-react"
+import {
+  FeatherIcon,
+  FlameIcon,
+  ScrollTextIcon,
+  SparklesIcon,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import type { View } from "@/lib/types"
@@ -6,6 +11,7 @@ import { useApp } from "@/state/app-state"
 
 const ITEMS: Array<{ view: View; label: string; icon: typeof FlameIcon }> = [
   { view: "draw", label: "求签", icon: FlameIcon },
+  { view: "plaza", label: "广场", icon: SparklesIcon },
   { view: "log", label: "缘分日志", icon: ScrollTextIcon },
   { view: "mine", label: "我的签", icon: FeatherIcon },
 ]
@@ -23,7 +29,7 @@ export function AppNav() {
             <Button
               key={item.view}
               variant={active ? "default" : "ghost"}
-              className="h-12 flex-1"
+              className="h-14 min-w-0 flex-1 flex-col gap-0.5 px-1 text-[11px] leading-none"
               aria-current={active ? "page" : undefined}
               onClick={() => setView(item.view)}
             >

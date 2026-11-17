@@ -87,4 +87,4 @@ export type Settings = {
   installHintDismissed: boolean
 }
 
-export type View = "draw" | "log" | "mine"
+export type View = "draw" | "plaza" | "log" | "mine"

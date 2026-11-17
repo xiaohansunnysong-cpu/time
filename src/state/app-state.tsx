@@ -75,9 +75,17 @@ type AppContextValue = {
 const AppContext = createContext<AppContextValue | null>(null)
 
 function parseView(hash: string): View {
+  if (hash === "#plaza") return "plaza"
   if (hash === "#log") return "log"
   if (hash === "#mine") return "mine"
   return "draw"
+}
+
+function hashFor(view: View): string {
+  if (view === "plaza") return "#plaza"
+  if (view === "log") return "#log"
+  if (view === "mine") return "#mine"
+  return "#draw"
 }
 
 function notifyReady() {
@@ -123,7 +131,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [settings, day])
 
   const setView = useCallback((next: View) => {
-    const hash = next === "draw" ? "#draw" : next === "log" ? "#log" : "#mine"
+    const hash = hashFor(next)
     if (window.location.hash !== hash) {
       window.location.hash = hash
     }
@@ -220,8 +228,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const freshCustom = custom.filter(
           (challenge) =>
             !currentDay.draws.some(
-              (item) => item.slip.challengeId === challenge.id,
-            ),
+              (item) => item.slip.challengeId === challenge.id
+            )
         )
         const useCustom = freshCustom.length > 0 && Math.random() < 1 / 3
         const slip = useCustom

@@ -8,3 +8,14 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
+  - type: web
+    name: shijian-manghe-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false

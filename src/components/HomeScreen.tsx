@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { PlazaShareSheet } from "@/components/PlazaShareSheet"
 import { StorySheet } from "@/components/StorySheet"
 import { canDraw, phaseOf, surpriseIsReady } from "@/lib/draw"
 import { formatCountdown, msUntilLocalMidnight } from "@/lib/format"
@@ -33,9 +34,11 @@ export function HomeScreen() {
   const remainingDraw = canDraw(day)
   const ready = surpriseIsReady(day, settings, now)
   const [storyOpen, setStoryOpen] = useState(false)
+  const [plazaOpen, setPlazaOpen] = useState(false)
   const left = formatCountdown(msUntilLocalMidnight(now))
 
   const offer = phase.kind === "offer" ? phase : null
+  const latest = day.draws[day.draws.length - 1] ?? null
 
   return (
     <div className="flex flex-col gap-6">
@@ -52,6 +55,24 @@ export function HomeScreen() {
           <p className="text-sm leading-relaxed text-muted-foreground">
             让生活轻轻偏出原有的轨迹。不是占卜，只是一件可以留下小故事的小事。
           </p>
+          <div className="flex flex-col items-start gap-1">
+            <Button
+              variant="link"
+              className="h-auto justify-start px-0"
+              onClick={() => setView("plaza")}
+            >
+              去广场看看
+            </Button>
+            {latest ? (
+              <Button
+                variant="link"
+                className="h-auto justify-start px-0 text-left whitespace-normal"
+                onClick={() => setPlazaOpen(true)}
+              >
+                完成后，把小故事挂到广场
+              </Button>
+            ) : null}
+          </div>
         </div>
         <Button
           variant="outline"
@@ -178,6 +199,14 @@ export function HomeScreen() {
           onOpenChange={setStoryOpen}
           drawId={offer.draw.id}
           title={offer.draw.slip.title}
+        />
+      ) : null}
+
+      {latest ? (
+        <PlazaShareSheet
+          open={plazaOpen}
+          onOpenChange={setPlazaOpen}
+          slip={latest.slip}
         />
       ) : null}
     </div>
