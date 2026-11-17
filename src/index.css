@@ -669,3 +669,41 @@
     animation: none;
   }
 }
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+@media (max-width: 380px) {
+  .plaza-wall {
+    gap: 1.1rem;
+  }
+
+  .ema {
+    padding-right: 0.85rem;
+    padding-left: 0.85rem;
+  }
+
+  .tube-stage {
+    height: 14rem;
+  }
+}
+
+@media (max-height: 700px) {
+  .tube-stage {
+    height: 12rem;
+  }
+
+  .tube {
+    height: 8.5rem;
+  }
+}
