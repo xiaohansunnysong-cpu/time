@@ -1,4 +1,4 @@
-export const SLIP_TOTAL = 10000
+export const SLIP_TOTAL = 57
 export const REPEAT_AFTER_RATIO = 1
 
 export function createSeen(total = SLIP_TOTAL): Uint8Array {
