@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")
-const TOTAL = 10000
+const TOTAL = 57
 const CHUNK = 500
 
 const BAD =
@@ -272,277 +272,404 @@ function durationFor(category, n) {
 
 const jewels = [
   {
-    category: "ritual",
-    duration: 5,
-    verse: "宣布之后，晚饭有了江湖",
-    title: "给今天的晚饭起一个武侠名字，并郑重宣布",
-    description:
-      "名字要具体，最好带上一件器物或一种天气。只宣布一次，对自己或同桌说也算，然后照常开吃。",
+    "category": "music",
+    "duration": 5,
+    "verse": "第二首歌，替今天开门",
+    "title": "闭眼听完歌单里的第二首歌",
+    "description": "找一个安稳的位置坐下，闭上眼睛听完歌单里的第二首歌。听完记下脑海里出现的第一个画面。"
   },
   {
-    category: "rule",
-    duration: 15,
-    verse: "四字够用，世界变轻",
-    title: "接下来一小时，说话只用四个字",
-    description:
-      "四个字一句，多了就停下来重说。做不到就笑一下再来。只约束自己，不必向别人解释这是签。",
+    "category": "sense",
+    "duration": 15,
+    "verse": "陌生的一杯，今天归你",
+    "title": "点一杯从没点过的饮品",
+    "description": "在自己的预算内，点一杯从没喝过的饮品。喝第一口前猜猜它是什么味道，喝完再给它打个分。"
   },
   {
-    category: "stranger",
-    duration: 5,
-    verse: "夸到细节，人才被看见",
-    title: "轻轻夸一位店员把东西摆齐的样子",
-    description:
-      "说一句具体的、让人舒服的话，夸的是手上的事，不是长相。说完道谢就走，不问名字，不留联系方式。",
+    "category": "memory",
+    "duration": 15,
+    "verse": "旧照片里还有今天",
+    "title": "翻看十年前今天的照片",
+    "description": "找一张十年前今天拍的照片，认真看一会儿，写一句当时没说的话。找不到就翻同月前后几天。"
   },
   {
-    category: "secret",
-    duration: 15,
-    verse: "纸条不署名，角落会笑",
-    title: "在公共留言处留一张写着好话的匿名纸条",
-    description:
-      "写「今天的你已经很好」或一句同样轻的话。不署名，不留联系方式，不挡路。放好就走。",
+    "category": "city",
+    "duration": 30,
+    "verse": "两三站，也算偏航",
+    "title": "坐一次没坐过的公交两三站",
+    "description": "选一条没坐过的公交，先确认返程路线，再白天坐两三站。下车逛五分钟，想回家就按熟悉路线返回。"
   },
   {
-    category: "explore",
-    duration: 15,
-    verse: "宝物不必带走",
-    title: "走一条从没走过的路回家，并找到一个宝物",
-    description:
-      "宝物可以是一片怪叶子、一块好看的砖或一句招牌。看清它，在心里登记，不必带走。走到熟悉的地方就结束。",
+    "category": "friend",
+    "duration": 5,
+    "verse": "十秒钟，谁先笑",
+    "title": "和好朋友对视十秒不笑场",
+    "description": "先问朋友愿不愿意玩。彼此看着对方十秒，不能笑场；笑了可以再来一次。"
   },
   {
-    category: "role",
-    duration: 15,
-    verse: "三件小事，就是报告",
-    title: "假装自己是来地球考察的外星人，记录三件奇怪的人类行为",
-    description:
-      "写在纸上或备忘录里。只观察，不打扰，不拍别人的脸。记完把身份交还，恢复成地球人。",
+    "category": "movement",
+    "duration": 5,
+    "verse": "五下之后，今天算数",
+    "title": "做五个仰卧起坐",
+    "description": "做五个仰卧起坐，完成后给自己鼓一次掌。身体不方便的话，改做五次轻松的伸展动作。"
   },
   {
-    category: "create",
-    duration: 15,
-    verse: "三件东西，已经是展览",
-    title: "用手边三样东西摆一个小雕塑，并给它起名",
-    description:
-      "不另外买东西。摆好看一分钟，把名字念出来。然后各自放回原处，展览闭馆。",
+    "category": "friend",
+    "duration": 15,
+    "verse": "三欧买来一阵凉快",
+    "title": "请朋友吃一支小冰激凌",
+    "description": "请身边一位朋友吃一支三欧左右的冰激凌。超出预算就让对方补差价；对方不想吃也没关系。"
   },
   {
-    category: "luck",
-    duration: 5,
-    verse: "红的那件，点了今晚",
-    title: "下一个看到的红色东西，决定你今晚吃什么的一个小选择",
-    description:
-      "让红色只决定一件免费、马上能做的小事，比如加不加葱、喝热的还是常温。不合适就向红色道谢，改由你选。",
+    "category": "kindness",
+    "duration": 15,
+    "verse": "小小发夹，另找主人",
+    "title": "买个新发夹送给用得上的朋友",
+    "description": "挑一个预算内的小发夹。如果自己用不上，就问一位可能喜欢的朋友要不要；不合适就自己留着。"
   },
   {
-    category: "rule",
-    duration: 15,
-    verse: "按歪了的节拍走路",
-    title: "把每一扇普通的门当成关卡，经过时在心里通关",
-    description:
-      "不必出声。通关词可以是四个字。走到家或到你愿意停的那一扇为止。",
+    "category": "kindness",
+    "duration": 5,
+    "verse": "一句话，绕回家里",
+    "title": "给妈妈发一句我爱你",
+    "description": "给妈妈发一句「突然想告诉你，我爱你」。如果今天不方便联系，就把这句话写给一位让你安心的人。"
   },
   {
-    category: "ritual",
-    duration: 5,
-    verse: "一口头衔，万般平常",
-    title: "给自己的影子封一个座位，请它先坐",
-    description:
-      "找一处有光的地方，看影子落在哪。在心里把那块地面让给它一会儿，你再坐下或走开。",
+    "category": "stranger",
+    "duration": 5,
+    "verse": "白衣经过，送一句晴天",
+    "title": "向穿白色衣服的人问声好",
+    "description": "白天在公共场所，遇到一位穿白衣、看起来不忙的人，保持距离说「你好，今天是个美丽的日子」。不回应就微笑离开。"
   },
   {
-    category: "family",
-    duration: 15,
-    verse: "指挥权只借三分钟",
-    title: "和家人交换三分钟指挥权，你只照做一件小事",
-    description:
-      "三分钟到了就停，并谢谢指挥官。只有自己，就让一只玩偶发号施令，你照做一件无害的小事。",
+    "category": "friend",
+    "duration": 5,
+    "verse": "十秒钟，留下今天的声音",
+    "title": "请人帮你录十秒钟唱歌",
+    "description": "遇到一位年龄相仿、穿白衣的异性，先问能否帮你录十秒。对方愿意再唱一句喜欢的歌；只录你自己，录完道谢。"
   },
   {
-    category: "family",
-    duration: 15,
-    verse: "谁先笑，谁就赢一点",
-    title: "把一首熟歌改两个字，唱给自己或家人",
-    description:
-      "儿歌、老歌或广告调都可以。唱完就可以笑，不必录下来，也不必发给别人。",
+    "category": "art",
+    "duration": 15,
+    "verse": "一朵鸢尾，停住五分钟",
+    "title": "和梵高的《鸢尾花》待五分钟",
+    "description": "找一张梵高《鸢尾花》的画，选一朵最先吸引你的花，给它起个名字，再猜猜它此刻在想什么。"
   },
   {
-    category: "sense",
-    duration: 5,
-    verse: "声音也要有名字",
-    title: "闭眼听满一分钟，给三种声音起外号",
-    description:
-      "就地站着或坐着。睁开眼立刻写下三个外号。外号可以很离谱，只要你自己听得懂。",
+    "category": "food",
+    "duration": 60,
+    "verse": "一餐饭，装着一点心意",
+    "title": "亲手给喜欢的人做一餐饭",
+    "description": "给喜欢的人认真做一道饭菜，可以简单但要亲手完成。送出前拍张照，记下做饭时的心情。"
   },
   {
-    category: "luck",
-    duration: 5,
-    verse: "硬币比计划更会迷路",
-    title: "用一枚硬币决定下一个路口，走五分钟再原路返回",
-    description:
-      "只在安全的人行道上玩。硬币不管红灯，你自己管。五分钟到了就回头，不必走到陌生的深处。",
+    "category": "music",
+    "duration": 15,
+    "verse": "副歌学会，今天多一首",
+    "title": "学唱一首新歌的副歌",
+    "description": "选一首没学过的歌，跟着学会副歌。不要追求唱准，能从头唱到尾就算完成。"
   },
   {
-    category: "secret",
-    duration: 15,
-    verse: "未来的你会拆开今天",
-    title: "给七天后的自己写一句，藏进一本书里",
-    description:
-      "只写一件你希望那时还记得的小事。藏好就忘掉它，让以后的自己遇见。",
+    "category": "kindness",
+    "duration": 15,
+    "verse": "今天也值得一束花",
+    "title": "买一束花送给自己",
+    "description": "买一束预算内的花送给自己，不用等特别的日子。带回家后给它找个显眼的位置。"
   },
   {
-    category: "ritual",
-    duration: 5,
-    verse: "叫过的事物，会记住你",
-    title: "出门或回家时，对鞋子说一句辛苦了",
-    description:
-      "声音可以小到只有鞋听见。说完把它们放正。这就是今天的闭幕或开场。",
+    "category": "friend",
+    "duration": 5,
+    "verse": "一句台词，打开旧电影",
+    "title": "模仿电影台词让朋友猜片名",
+    "description": "挑一段你熟悉的电影经典台词，用原来的语气说给亲近的人听，让对方猜是哪部电影。猜错就揭晓答案。"
   },
   {
-    category: "food",
-    duration: 15,
-    verse: "剩菜也可以封神",
-    title: "给冰箱里现有的一样吃的起一个仙侠名字，吃的时候宣布",
-    description:
-      "不额外买。名字要像样，比如带上一座山或一阵风。宣布完就吃，吃完把盒子归位。",
+    "category": "courage",
+    "duration": 5,
+    "verse": "说一次不，也是在选择",
+    "title": "对一件不愿意的事说不",
+    "description": "遇到一件你不想答应的小事，平静地说「不，这次我不愿意」。不编理由，也不必解释；若当下不适合，就写下来。"
   },
   {
-    category: "role",
-    duration: 15,
-    verse: "月亮今晚微服",
-    title: "假装自己是微服的月亮，记下三件人类对灯光的郑重",
-    description:
-      "路灯、台灯、橱窗都行。只看，不打扰别人。用三句话写完，月亮就下班。",
+    "category": "kindness",
+    "duration": 15,
+    "verse": "留一点食物，也留点距离",
+    "title": "给一只流浪猫放些猫粮和清水",
+    "description": "在干净安全的地方给流浪猫放少量猫粮和清水。不要追赶或抱它，也不要喂牛奶；不适合投喂就联系动物救助。"
   },
   {
-    category: "create",
-    duration: 15,
-    verse: "小小的，也算建成",
-    title: "用杯子、钥匙和一张纸摆一座桌面山脉，并给它起名",
-    description:
-      "就这三样，不买新的。看一分钟，把名字念出来，再把它们放回原位。",
+    "category": "kindness",
+    "duration": 15,
+    "verse": "先问一句，再伸出手",
+    "title": "在医院问问老人是否需要帮忙",
+    "description": "在医院遇到行动不便的老人，先问是否需要帮忙找服务台或诊室。对方同意后协助联系工作人员，病情和取药交给医护或家属。"
   },
   {
-    category: "luck",
-    duration: 5,
-    verse: "手势来了，就偏一下",
-    title: "下一声鸟叫、门铃声或碗碰碗，就去喝一杯水",
-    description:
-      "把那个声音当成命运的手势。水是免费的那一杯。若一直没有声音，就以你的下一次哈欠为准。",
+    "category": "book",
+    "duration": 30,
+    "verse": "十页之后，换个念头",
+    "title": "认真读眼前第一本书的十页",
+    "description": "拿起眼前第一本书，认真读满十页，不跳着看。读完记下最让你停顿的一句话。"
   },
   {
-    category: "rule",
-    duration: 15,
-    verse: "自己跟自己签的约",
-    title: "走路时把每把伞看成帆，在心里祝它们顺风",
-    description:
-      "不评论别人，只在心里说。看到第三把，或走到你该停的地方，这支签就完成。",
+    "category": "photo",
+    "duration": 5,
+    "verse": "普通东西，主演今天",
+    "title": "给普通东西拍一张电影海报",
+    "description": "给杯子、树影或窗户拍一张电影海报风格的照片。只拍一张，再给这部电影起个名字。"
   },
   {
-    category: "family",
-    duration: 15,
-    verse: "晚饭之前的一小场",
-    title: "问家人一个从没问过的小问题：小时候最喜欢哪种声音",
-    description:
-      "问完就听，不评价。只有自己，就把问题写下来，并替小时候的自己答一句。",
+    "category": "friend",
+    "duration": 5,
+    "verse": "一首歌就够传信",
+    "title": "给想到的第一个人发一首歌",
+    "description": "挑一首歌发给脑海里第一个出现的人，只写「这首歌让我想到你」。不必解释，也不用等回复。"
   },
   {
-    category: "create",
-    duration: 15,
-    verse: "名字比形状先到",
-    title: "把一句抱怨翻译成夸张的诗，写在纸上然后揉掉",
-    description:
-      "两行就够，不必押韵。写完揉成一团扔掉或收进废纸。抱怨完成任务后就可以下班。",
+    "category": "friend",
+    "duration": 15,
+    "verse": "一个问题，打开旧抽屉",
+    "title": "问朋友一个以前没问过的问题",
+    "description": "问一位朋友：「小时候最喜欢哪种声音？」听完后也分享自己的答案。"
   },
   {
-    category: "city",
-    duration: 15,
-    verse: "问一句，地图裂开",
-    title: "进一家没进过的小店，只问一个不花钱的问题",
-    description:
-      "问一件具体的小事，比如某种面包几点出炉。道谢后离开，不必买。",
+    "category": "kindness",
+    "duration": 5,
+    "verse": "具体的谢，最容易记住",
+    "title": "对正在做事的人说具体的谢谢",
+    "description": "对一位正在帮你做事的人，说清楚你谢的是哪一件小事。没有合适时机就给熟人发条简短感谢。"
   },
   {
-    category: "ritual",
-    duration: 5,
-    verse: "把今天叫醒",
-    title: "给今天的运气起一个四字名字，写在掌心再握上",
-    description:
-      "四个字，可以很好笑。握十秒，然后去洗手或直接开始下一件事。名字不必告诉别人。",
+    "category": "food",
+    "duration": 15,
+    "verse": "新味道，只有一小口",
+    "title": "买一种没吃过的小点心",
+    "description": "选一种没吃过、看起来愿意尝试的小点心，买最小份就好。尝完用三个词形容味道。"
   },
   {
-    category: "family",
-    duration: 15,
-    verse: "家里也可以出城",
-    title: "和孩子或自己比赛，谁先找到三件圆形的东西",
-    description:
-      "找到就停，排成一排看一眼。不必收拾出成果，圆的东西各回各处。",
+    "category": "city",
+    "duration": 15,
+    "verse": "提前一站，路就新了",
+    "title": "提前一站下车走一条新路",
+    "description": "在熟悉且安全的区域提前一站下车，沿明亮熟悉的路线走十分钟。出发前看好回程方式，累了就返回。"
   },
   {
-    category: "explore",
-    duration: 15,
-    verse: "偏航是今天的正文",
-    title: "把回家的路走成电影片头，慢到自己想笑",
-    description:
-      "大约十分钟。只看招牌、树和光，不看手机。走到熟悉的地方，片头结束。",
+    "category": "music",
+    "duration": 5,
+    "verse": "旧歌换了一双耳朵",
+    "title": "听一首小时候熟悉的歌",
+    "description": "找一首小时候常听的歌，听到结束。记下现在听它时最先想到的一个人或地方。"
   },
   {
-    category: "kindness",
-    duration: 5,
-    verse: "具体的谢，最轻也最真",
-    title: "对一位正在做事的人说一句点明事情的谢谢",
-    description:
-      "收银、骑手、保洁或同事都可以。说清你谢的是哪一件。没有机会，就给同住的人倒一杯水。",
+    "category": "photo",
+    "duration": 5,
+    "verse": "光落下来，刚好被你看见",
+    "title": "拍下今天最特别的一束光",
+    "description": "拍一张今天偶然看见的光、影子或反光。给照片写四个字的标题，不用修图。"
   },
   {
-    category: "secret",
-    duration: 5,
-    verse: "一句好话，自己会走路",
-    title: "在公告栏边角留一句不署名的好话",
-    description:
-      "写得具体、善意、很短。不挡通知，不留联系方式。贴好或压好就离开。",
+    "category": "food",
+    "duration": 15,
+    "verse": "果肉里藏着新地图",
+    "title": "尝一种没吃过的水果",
+    "description": "买一小份从没吃过的水果，或找一种自己很少吃的水果。尝一口，用三个词描述它。"
   },
   {
-    category: "slow",
-    duration: 5,
-    verse: "允许只做一点点",
-    title: "把手机扣下，直到你慢数到三十",
-    description:
-      "数错了不必重来，从你记得的地方继续。数完再把手机翻开，或者先去做一件更慢的事。",
+    "category": "friend",
+    "duration": 5,
+    "verse": "天空替你打了个招呼",
+    "title": "把今天的天空发给一位朋友",
+    "description": "拍下此刻的天空，发给一位朋友，只配一句「这片天刚刚看见你」。"
   },
   {
-    category: "food",
-    duration: 15,
-    verse: "先闻再咬，时间变厚",
-    title: "把家里现有的一小口吃的吃成仪式：先闻三秒，再起名",
-    description:
-      "不额外买。名字四个字以内。吃的时候不看手机，吃完用一句话留下余味。",
+    "category": "city",
+    "duration": 15,
+    "verse": "门里有一小段新鲜",
+    "title": "进一家从没进去过的小店看看",
+    "description": "走进附近一家从没进去过的小店，看看最吸引你的东西。不需要购买，观察一分钟就可以离开。"
   },
   {
-    category: "adventure",
-    duration: 15,
-    verse: "看一眼，就算抵达",
-    title: "去一家没进过的橱窗前站一分钟，只挑一件你愿意记住的",
-    description:
-      "不必进门，不必购买。把那一件用一句话写下来或记在心里，然后离开。",
+    "category": "ritual",
+    "duration": 5,
+    "verse": "杯子获得临时身份",
+    "title": "给今天的水杯起个临时名字",
+    "description": "给手边的杯子起个名字，比如「今日补给站」，举杯喝三口。名字只在今天有效。"
   },
   {
-    category: "home",
-    duration: 5,
-    verse: "这件东西今天值班",
-    title: "给今天的钥匙一个临时头衔，出门时叫它一声",
-    description:
-      "头衔四个字。叫完就装进口袋。回来若还记得，就免去它的职务。",
+    "category": "create",
+    "duration": 15,
+    "verse": "三样东西，也能开幕",
+    "title": "用三样东西摆一个小展览",
+    "description": "用手边三样东西摆一个小展览，给它们起个展览名，拍一张照片后放回原处。"
   },
   {
-    category: "sense",
-    duration: 5,
-    verse: "五个字，刚刚好",
-    title: "找到一种近处的气味，用刚好五个字形容",
-    description:
-      "肥皂、书页、茶、雨或厨房都可以。五个字不必成句。说出来或写下来，这支签就齐了。",
+    "category": "memory",
+    "duration": 5,
+    "verse": "旧时光收到一封信",
+    "title": "给十年前的自己留一句话",
+    "description": "翻一张十年前的照片，给照片里的自己写一句现在想说的话。找不到旧照片，就写给十年前的自己。"
   },
+  {
+    "category": "music",
+    "duration": 15,
+    "verse": "今天的片头曲已选好",
+    "title": "和朋友互相选一首今天的主题曲",
+    "description": "你和朋友各选一首歌当今天的主题曲，互相分享。听完其中一首就完成。"
+  },
+  {
+    "category": "luck",
+    "duration": 5,
+    "verse": "硬币只管小小一件事",
+    "title": "让硬币替你选一件小事",
+    "description": "抛硬币决定今天喝热饮还是冷饮，或走哪条熟悉的路。结果不合适就按自己的想法来。"
+  },
+  {
+    "category": "home",
+    "duration": 5,
+    "verse": "漂泊物终于靠岸",
+    "title": "把一件总漂泊的东西送回原位",
+    "description": "挑一件总在桌面或椅子上漂泊的东西，把它放回合适的位置。完成后对它说「到站了」。"
+  },
+  {
+    "category": "city",
+    "duration": 15,
+    "verse": "长椅借你三分钟",
+    "title": "去附近找一张没坐过的长椅",
+    "description": "白天找一张干净安全的长椅坐三分钟。看看周围，记下一件之前没注意到的事。"
+  },
+  {
+    "category": "photo",
+    "duration": 5,
+    "verse": "旧照片，新标题",
+    "title": "给一张旧照片重新起个标题",
+    "description": "从相册里挑一张旧照片，给它起一个今天才想到的新标题。不必发给别人。"
+  },
+  {
+    "category": "food",
+    "duration": 15,
+    "verse": "颜色先替你做决定",
+    "title": "点一杯颜色不像你会选的饮品",
+    "description": "在预算内点一杯颜色不像你平时会选的饮品。第一口前猜味道，再看看猜得准不准。"
+  },
+  {
+    "category": "adventure",
+    "duration": 15,
+    "verse": "五分钟，足够偏离",
+    "title": "在熟悉街区走一条平时不走的路",
+    "description": "白天在熟悉的街区选一条平时不走的安全路线，走五分钟后折返。"
+  },
+  {
+    "category": "kindness",
+    "duration": 5,
+    "verse": "纸条先替你开口",
+    "title": "给身边的人留一句具体夸奖",
+    "description": "给家人或朋友写一句具体的夸奖，放在对方会看到的地方，或方便时发给对方。"
+  },
+  {
+    "category": "memory",
+    "duration": 5,
+    "verse": "一周后的你会拆信",
+    "title": "给一周后的自己留一句话",
+    "description": "写一句话给七天后的自己，放进备忘录并设一个提醒。只写一句，不安排待办。"
+  },
+  {
+    "category": "kindness",
+    "duration": 5,
+    "verse": "归位也是小小善意",
+    "title": "把一件共用的东西放回原位",
+    "description": "把身边一件大家共用的东西放回原位，比如购物篮、椅子或书。只整理这一件就好。"
+  },
+  {
+    "category": "nature",
+    "duration": 15,
+    "verse": "落叶也有自己的名字",
+    "title": "找一片已经落下的叶子",
+    "description": "在散步时找一片已经落下的叶子，观察它的形状和颜色，不要摘树上的叶子。给它起个名字。"
+  },
+  {
+    "category": "friend",
+    "duration": 5,
+    "verse": "一句歌，借来一分钟",
+    "title": "问朋友借一分钟听你唱歌",
+    "description": "问一位熟悉的朋友愿不愿意听你唱一句歌。对方愿意再唱，不方便就改天。"
+  },
+  {
+    "category": "stranger",
+    "duration": 15,
+    "verse": "别人的答案，是新线索",
+    "title": "问店员今天最受欢迎的饮品",
+    "description": "在店里不忙的时候问店员今天哪款饮品最受欢迎。听完道谢，预算合适再决定要不要点。"
+  },
+  {
+    "category": "movement",
+    "duration": 5,
+    "verse": "脚尖短暂看见屋顶",
+    "title": "做十次踮脚再慢慢放下",
+    "description": "扶着稳固的桌沿或墙，踮脚十次再慢慢放下。若不舒服，就坐着活动脚踝十次。"
+  },
+  {
+    "category": "friend",
+    "duration": 15,
+    "verse": "十分钟，聊点路上的事",
+    "title": "邀请朋友一起散步十分钟",
+    "description": "给一位朋友发消息，问对方愿不愿意一起散步十分钟。对方没空，就自己走一段平时少走的路。"
+  },
+  {
+    "category": "sense",
+    "duration": 5,
+    "verse": "耳朵先出门散步",
+    "title": "闭眼听一会儿窗外的声音",
+    "description": "在安稳的地方坐下，闭眼听三十秒，睁眼后写下最先听见的两种声音。"
+  },
+  {
+    "category": "family",
+    "duration": 15,
+    "verse": "旧愿望又被提起",
+    "title": "问家人小时候最想做什么",
+    "description": "找一位家人问：「你小时候最想做什么？」认真听完，再说说你小时候的愿望。"
+  },
+  {
+    "category": "create",
+    "duration": 15,
+    "verse": "一件小事，留在纸上",
+    "title": "把今天的一件小事画下来",
+    "description": "用一分钟画下今天刚发生的一件小事，不用画得像。给这张画起个标题。"
+  },
+  {
+    "category": "food",
+    "duration": 15,
+    "verse": "冰箱里也有新组合",
+    "title": "用家里现有食材做一道新搭配",
+    "description": "只用家里现有的食材，试着做一道没搭配过的小吃。先少做一点，给它起个名字。"
+  },
+  {
+    "category": "city",
+    "duration": 30,
+    "verse": "陌生一站，半日偏航",
+    "title": "坐最近一趟火车去陌生一站",
+    "description": "不提前挑目的地，坐最近一趟白天出发的火车，在一站没去过的地方下车逛一会儿。出发前确认预算和返程班次。"
+  },
+  {
+    "category": "friend",
+    "duration": 5,
+    "verse": "一句话，把日常拐弯",
+    "title": "对熟悉的人说一句没头没尾的话",
+    "description": "找个轻松时刻对熟悉的人说：「我刚才突然想起你。」说完停一下，听听对方怎么回应。"
+  },
+  {
+    "category": "book",
+    "duration": 15,
+    "verse": "第一页，借来一段路",
+    "title": "在书店随机读一本书的第一页",
+    "description": "进一家书店，挑一本从没看过的书，只读第一页。把最喜欢的一句话记下来，然后放回去。"
+  },
+  {
+    "category": "kindness",
+    "duration": 15,
+    "verse": "一餐饭，装着一点心意",
+    "title": "给喜欢的人准备一道简单的菜",
+    "description": "给喜欢的人亲手做一道简单的菜，不必铺张。送出前拍张照片，记下当时的心情。"
+  }
 ]
 
 const frames = []
@@ -1692,7 +1819,7 @@ for (let n = 1; n <= TOTAL; n += 1) {
 
 const counts = new Map()
 for (const slip of slips) counts.set(slip.category, (counts.get(slip.category) ?? 0) + 1)
-const needed = ["ritual", "rule", "stranger", "secret", "explore", "role", "create", "luck", "kindness", "adventure", "family", "food"]
+const needed = []
 for (const category of needed) {
   if ((counts.get(category) ?? 0) < 200) {
     throw new Error(`${category} 只有 ${counts.get(category) ?? 0} 支`)
@@ -1711,7 +1838,7 @@ writeFileSync(
   JSON.stringify({ total: slips.length, chunkSize: CHUNK }),
 )
 
-const sampleAt = [1, 8, 40, 200, 500, 1000, 2500, 4000, 5555, 7000, 8192, 9000, 9500, 9999, 10000]
+const sampleAt = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 57]
 const sampleRng = mulberry32(42)
 const randomAt = new Set()
 while (randomAt.size < 15) randomAt.add(1 + Math.floor(sampleRng() * TOTAL))
