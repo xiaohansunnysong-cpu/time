@@ -340,6 +340,43 @@ export function createApp(pool) {
         json(res, result.status, result.body, origin)
         return
       }
+
+      if (req.method === "GET" && url.pathname === "/api/wishes") {
+        const raw = url.searchParams.get("clientId") || ""
+        const visitor = raw ? normalizeClientId(raw) : { text: "" }
+        if (visitor.error) { json(res, 400, { error: visitor.error }, origin); return }
+        const result = await pool.query(
+          "SELECT id, wish_text, status, created_at, (claimant_id = $1 AND $1 <> '') AS claimed_by_me FROM wishes WHERE status <> 'fulfilled' OR created_at > now() - interval '14 days' ORDER BY (status = 'fulfilled') ASC, created_at DESC LIMIT 50",
+          [visitor.text],
+        )
+        json(res, 200, { wishes: result.rows.map((row) => ({ id: row.id, text: row.wish_text, status: row.status, createdAt: new Date(row.created_at).toISOString(), claimedByMe: row.claimed_by_me === true })) }, origin)
+        return
+      }
+      if (req.method === "POST" && url.pathname === "/api/wishes") {
+        const body = await readBody(req)
+        const wish = normalizeWishText(body.text)
+        const visitor = normalizeClientId(body.clientId)
+        const invalid = [wish, visitor].find((item) => item.error)
+        if (invalid) { json(res, 400, { error: invalid.error }, origin); return }
+        const quota = await pool.query("SELECT count(*)::int AS count FROM wishes WHERE client_id = $1 AND created_at > now() - interval '1 day'", [visitor.text])
+        if (quota.rows[0].count >= 5) { json(res, 429, { error: "今天挂愿的次数用完了，明天再来" }, origin); return }
+        const inserted = await pool.query("INSERT INTO wishes (id, wish_text, client_id) VALUES ($1, $2, $3) RETURNING id, wish_text, status, created_at", [randomUUID(), wish.text, visitor.text])
+        const row = inserted.rows[0]
+        json(res, 201, { id: row.id, text: row.wish_text, status: row.status, createdAt: new Date(row.created_at).toISOString(), claimedByMe: false }, origin)
+        return
+      }
+      const wishAction = /^\\/api\\/wishes\\/([0-9a-f-]{36})\\/(claim|fulfill)$/.exec(url.pathname)
+      if (req.method === "POST" && wishAction) {
+        const body = await readBody(req)
+        const visitor = normalizeClientId(body.clientId)
+        if (visitor.error) { json(res, 400, { error: visitor.error }, origin); return }
+        const result = wishAction[2] === "claim"
+          ? await pool.query("UPDATE wishes SET status = 'claimed', claimant_id = $2 WHERE id = $1 AND status = 'open' AND client_id <> $2 RETURNING id", [wishAction[1], visitor.text])
+          : await pool.query("UPDATE wishes SET status = 'fulfilled', fulfilled_at = now() WHERE id = $1 AND status = 'claimed' AND claimant_id = $2 RETURNING id", [wishAction[1], visitor.text])
+        if (!result.rowCount) { json(res, 409, { error: "这份心愿刚刚有变化，刷新看看" }, origin); return }
+        json(res, 200, { ok: true }, origin)
+        return
+      }
       json(res, 404, { error: "没有这条路" }, origin)
     } catch (error) {
       const status = error.status || 503
