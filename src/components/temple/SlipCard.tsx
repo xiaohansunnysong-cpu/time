@@ -25,7 +25,7 @@ export function SlipCard({ slip }: { slip: SlipSnapshot }) {
           </span>
         </div>
         <p className="text-xs leading-relaxed opacity-70">
-          签号和「上上签」「下签」只是玩法称呼，不作吉凶。这是一张今天的小邀请。
+          签号和签文只是玩法称呼，不作吉凶。这是一张今天的小邀请。
         </p>
       </div>
       <div className="seal absolute right-4 bottom-16" aria-hidden>
