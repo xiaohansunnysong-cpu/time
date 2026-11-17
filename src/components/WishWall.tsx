@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { getClientId } from "@/lib/client"
 import { API_BASE } from "@/lib/plaza"
 
@@ -33,11 +34,13 @@ export function WishWall() {
   const [draft, setDraft] = useState("")
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
+  const [selectedWish, setSelectedWish] = useState<Wish | null>(null)
 
   async function refresh() {
     try {
       const data = await call("/api/wishes?clientId=" + encodeURIComponent(clientId.current))
       setWishes(data.wishes)
+      setSelectedWish(current => current ? data.wishes.find((wish: Wish) => wish.id === current.id) ?? null : null)
     } catch (e) {
       toast(e instanceof Error ? e.message : "心愿墙暂时安静")
     } finally {
@@ -116,7 +119,15 @@ export function WishWall() {
       <div className="space-y-3">
         {wishes.map(w => (
           <article key={w.id} className="min-w-0 rounded-xl border border-[#d9b85f]/15 bg-white/[0.035] p-3">
-            <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-[#f2ead8]">{w.text}</p>
+            <button
+              type="button"
+              onClick={() => setSelectedWish(w)}
+              aria-label="打开这份心愿"
+              className="block min-h-11 w-full rounded-lg text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#e8cb72]"
+            >
+              <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-[#f2ead8]">{w.text}</p>
+              <span className="mt-2 inline-block text-xs text-[#e8cb72]">点开查看并回应 ›</span>
+            </button>
             <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs text-[#989180]">{w.status === "fulfilled" ? "✨ 已还愿" : w.status === "claimed" ? (w.claimedByMe ? "你已认领" : "有人正在帮忙") : "等待有缘人"}</span>
               {w.status === "open" ? <Button variant="outline" className="min-h-10" onClick={() => void act(w.id, "claim")}>我来帮你</Button> : null}
@@ -125,6 +136,26 @@ export function WishWall() {
           </article>
         ))}
       </div>
+      {selectedWish ? (
+        <Dialog open onOpenChange={open => { if (!open) setSelectedWish(null) }}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>这份小心愿</DialogTitle>
+              <DialogDescription>愿意的话，可以帮它往前走一步。</DialogDescription>
+            </DialogHeader>
+            <p className="whitespace-pre-wrap break-words rounded-xl bg-white/[0.04] p-4 text-base leading-relaxed text-[#f2ead8]">{selectedWish.text}</p>
+            <p className="text-sm text-muted-foreground">
+              {selectedWish.status === "fulfilled" ? "✨ 已经实现" : selectedWish.status === "claimed" ? (selectedWish.claimedByMe ? "你已经认领，可以完成后回来还愿" : "已经有一位有缘人正在帮忙") : "等待有缘人"}
+            </p>
+            {selectedWish.status === "open" ? (
+              <Button className="min-h-11 w-full" onClick={() => void act(selectedWish.id, "claim")}>我来帮你</Button>
+            ) : null}
+            {selectedWish.status === "claimed" && selectedWish.claimedByMe ? (
+              <Button className="min-h-11 w-full" onClick={() => void act(selectedWish.id, "fulfill")}>我已完成</Button>
+            ) : null}
+          </DialogContent>
+        </Dialog>
+      ) : null}
     </section>
   )
 }
