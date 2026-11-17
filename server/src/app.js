@@ -63,6 +63,8 @@ export async function migrate(pool) {
   await pool.query(
     "CREATE INDEX IF NOT EXISTS posts_ip_day_idx ON posts (ip_hash, created_at)",
   )
+  await pool.query("CREATE TABLE IF NOT EXISTS wishes (id UUID PRIMARY KEY, wish_text TEXT NOT NULL, client_id TEXT NOT NULL, claimant_id TEXT, status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'claimed', 'fulfilled')), created_at TIMESTAMPTZ NOT NULL DEFAULT now(), fulfilled_at TIMESTAMPTZ)")
+  await pool.query("CREATE INDEX IF NOT EXISTS wishes_feed_idx ON wishes (created_at DESC)")
 }
 
 function json(res, status, body, origin) {
@@ -365,7 +367,8 @@ export function createApp(pool) {
         json(res, 201, { id: row.id, text: row.wish_text, status: row.status, createdAt: new Date(row.created_at).toISOString(), claimedByMe: false }, origin)
         return
       }
-      const wishAction = /^\\/api\\/wishes\\/([0-9a-f-]{36})\\/(claim|fulfill)$/.exec(url.pathname)
+      const wishParts = url.pathname.split("/")
+      const wishAction = wishParts.length === 5 && wishParts[1] === "api" && wishParts[2] === "wishes" && /^[0-9a-f-]{36}$/i.test(wishParts[3]) && ["claim", "fulfill"].includes(wishParts[4]) ? [null, wishParts[3], wishParts[4]] : null
       if (req.method === "POST" && wishAction) {
         const body = await readBody(req)
         const visitor = normalizeClientId(body.clientId)
