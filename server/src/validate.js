@@ -78,7 +78,8 @@ export function allowedOrigin(origin) {
 export function normalizeWishText(value) {
   const result = normalizeText(value, { min: 2, max: 120 })
   if (result.error) return result
-  if (/[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}/i.test(result.text) || /(?:\\+?\\d[\\d ()-]{7,}\\d)/.test(result.text)) {
+  const digits = result.text.replace(/\\D/g, "")
+  if (result.text.includes("@") || digits.length >= 8) {
     return { error: "心愿里不能留下电话或邮箱" }
   }
   return result
