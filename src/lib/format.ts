@@ -33,7 +33,8 @@ export function slipLabel(
   slip: Pick<SlipSnapshot, "custom" | "number" | "rank">
 ) {
   if (slip.custom) return "自拟签"
-  return `第${toChineseNumber(slip.number)}签 · ${slip.rank}`
+  const rank = String(slip.rank) === "下签" || String(slip.rank) === "下下签" ? "中签" : slip.rank
+  return `第${toChineseNumber(slip.number)}签 · ${rank}`
 }
 
 export function localDateKey(date: Date): string {
