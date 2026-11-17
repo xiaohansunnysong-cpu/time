@@ -7,15 +7,26 @@ import type {
 } from "@/lib/types"
 
 const DIGITS = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九"]
+const UNITS = ["", "十", "百", "千"]
 
 export function toChineseNumber(n: number): string {
-  if (!Number.isInteger(n) || n <= 0 || n >= 100) return String(n)
-  if (n < 10) return DIGITS[n] ?? String(n)
-  if (n === 10) return "十"
-  if (n < 20) return `十${DIGITS[n % 10]}`
-  const tens = Math.floor(n / 10)
-  const ones = n % 10
-  return `${DIGITS[tens]}十${ones ? DIGITS[ones] : ""}`
+  if (!Number.isInteger(n) || n <= 0 || n > 10000) return String(n)
+  if (n === 10000) return "一万"
+  const digits = String(n).split("").map(Number)
+  let out = ""
+  let pendingZero = false
+  digits.forEach((digit, index) => {
+    const unit = UNITS[digits.length - 1 - index] ?? ""
+    if (digit === 0) {
+      pendingZero = out.length > 0
+      return
+    }
+    if (pendingZero) out += "零"
+    pendingZero = false
+    if (!(digit === 1 && unit === "十" && out === "")) out += DIGITS[digit]
+    out += unit
+  })
+  return out
 }
 
 export function slipLabel(
@@ -64,19 +75,41 @@ export function formatClock(timestamp: number): string {
   return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`
 }
 
+export function formatRelative(then: number, now: number): string {
+  const delta = Math.max(0, now - then)
+  const minutes = Math.floor(delta / 60000)
+  if (minutes < 1) return "刚刚"
+  if (minutes < 60) return `${minutes}分钟前`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}小时前`
+  const days = Math.floor(hours / 24)
+  if (days === 1) return "昨天"
+  if (days < 30) return `${days}天前`
+  const date = new Date(then)
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
+}
+
 export const CATEGORY_LABEL: Record<Category, string> = {
-  city: "城市探索",
-  kindness: "陌生人小善意",
-  sense: "感官体验",
-  create: "创作",
-  family: "家庭/亲子",
+  ritual: "小仪式",
+  rule: "怪规则",
+  stranger: "轻轻一句",
+  secret: "秘密任务",
+  explore: "去看看",
+  role: "扮演",
+  luck: "运气",
+  adventure: "小冒险",
+  city: "城市",
+  kindness: "善意",
+  sense: "感官",
+  create: "微创作",
+  family: "家人",
   slow: "慢下来",
   food: "食物",
   nature: "自然",
-  music: "音乐",
-  book: "书页",
+  music: "声音",
+  book: "字句",
   photo: "照片",
-  memory: "记忆",
+  memory: "旧事",
   friend: "朋友",
   home: "家里",
 }

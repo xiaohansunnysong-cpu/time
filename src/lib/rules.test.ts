@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import { canDraw, emptyDay, phaseOf, pickSurpriseTime, rescheduleSurprise } from "@/lib/draw"
 import {
   formatCountdown,
+  formatRelative,
   localDateKey,
   msUntilLocalMidnight,
   slipLabel,
@@ -156,9 +157,14 @@ describe("copy helpers", () => {
   it("formats slip numbers and the midnight countdown", () => {
     expect(toChineseNumber(17)).toBe("十七")
     expect(toChineseNumber(20)).toBe("二十")
+    expect(toChineseNumber(101)).toBe("一百零一")
+    expect(toChineseNumber(10000)).toBe("一万")
     expect(slipLabel({ number: 17, rank: "上上签" })).toBe("第十七签 · 上上签")
     expect(slipLabel({ number: 1, rank: "上签", custom: true })).toBe("自拟签")
     const evening = new Date(2026, 10, 17, 23, 0, 0).getTime()
+    expect(formatRelative(evening - 30_000, evening)).toBe("刚刚")
+    expect(formatRelative(evening - 5 * 60_000, evening)).toBe("5分钟前")
+    expect(formatRelative(evening - 26 * 60 * 60_000, evening)).toBe("昨天")
     expect(localDateKey(new Date(evening))).toBe("2026-11-17")
     expect(formatCountdown(msUntilLocalMidnight(evening))).toBe("01:00:00")
   })

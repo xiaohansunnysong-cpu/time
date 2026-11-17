@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { HangPlaque } from "@/components/HangPlaque"
 import { ConfirmDelete } from "@/components/StorySheet"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -65,12 +66,13 @@ export function StoryScreen() {
   const groups = useMemo(() => groupsOf(stories, new Date(now)), [stories, now])
   const withPhotos = stories.filter((story) => story.photoId)
   const [pendingDelete, setPendingDelete] = useState<string | null>(null)
+  const [hanging, setHanging] = useState<Story | null>(null)
 
   return (
     <div className="flex flex-col gap-5">
       <header className="flex flex-col gap-2">
         <p className="text-xs tracking-[0.42em] text-primary">时间盲盒</p>
-        <h1 className="font-heading text-3xl">缘分日志</h1>
+        <h1 className="foil font-heading text-4xl">缘分日志</h1>
         <p className="text-sm leading-relaxed text-muted-foreground">
           做过的小事，留两句在这里。它只待在这台设备上。
         </p>
@@ -118,13 +120,22 @@ export function StoryScreen() {
                           {formatClock(story.createdAt)}
                         </span>
                       </div>
-                      <Button
-                        variant="ghost"
-                        className="h-10 self-start"
-                        onClick={() => setPendingDelete(story.id)}
-                      >
-                        删去
-                      </Button>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          variant="ghost"
+                          className="h-10 px-2 text-primary"
+                          onClick={() => setHanging(story)}
+                        >
+                          完成后，把小故事挂到广场
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          className="h-10 self-start"
+                          onClick={() => setPendingDelete(story.id)}
+                        >
+                          删去
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -161,6 +172,16 @@ export function StoryScreen() {
           if (pendingDelete) void removeStory(pendingDelete)
         }}
       />
+      {hanging ? (
+        <HangPlaque
+          open
+          onOpenChange={(open) => {
+            if (!open) setHanging(null)
+          }}
+          slip={hanging.slip}
+          initialStory={hanging.note}
+        />
+      ) : null}
     </div>
   )
 }

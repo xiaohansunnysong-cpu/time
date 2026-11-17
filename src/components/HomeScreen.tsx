@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { FortuneTube } from "@/components/temple/FortuneTube"
 import { Incense } from "@/components/temple/Incense"
@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { HangPlaque } from "@/components/HangPlaque"
 import { StorySheet } from "@/components/StorySheet"
 import { canDraw, phaseOf, surpriseIsReady } from "@/lib/draw"
 import { formatCountdown, msUntilLocalMidnight } from "@/lib/format"
@@ -33,7 +34,37 @@ export function HomeScreen() {
   const remainingDraw = canDraw(day)
   const ready = surpriseIsReady(day, settings, now)
   const [storyOpen, setStoryOpen] = useState(false)
+  const [hangOpen, setHangOpen] = useState(false)
   const left = formatCountdown(msUntilLocalMidnight(now))
+
+  useEffect(() => {
+    if (phase.kind !== "altar") return
+    let last = 0
+    let primed = false
+    let previous = { x: 0, y: 0, z: 0 }
+    const onMotion = (event: DeviceMotionEvent) => {
+      const acceleration = event.accelerationIncludingGravity
+      if (!acceleration || acceleration.x == null || acceleration.y == null || acceleration.z == null) {
+        return
+      }
+      if (!primed) {
+        previous = { x: acceleration.x, y: acceleration.y, z: acceleration.z }
+        primed = true
+        return
+      }
+      const delta =
+        Math.abs(acceleration.x - previous.x) +
+        Math.abs(acceleration.y - previous.y) +
+        Math.abs(acceleration.z - previous.z)
+      previous = { x: acceleration.x, y: acceleration.y, z: acceleration.z }
+      if (delta > 24 && Date.now() - last > 1800) {
+        last = Date.now()
+        requestDraw()
+      }
+    }
+    window.addEventListener("devicemotion", onMotion)
+    return () => window.removeEventListener("devicemotion", onMotion)
+  }, [phase.kind, requestDraw])
 
   const offer = phase.kind === "offer" ? phase : null
 
@@ -42,7 +73,7 @@ export function HomeScreen() {
       <header className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-2">
           <p className="text-xs tracking-[0.42em] text-primary">时间盲盒</p>
-          <h1 className="font-heading text-3xl leading-tight">
+          <h1 className="foil font-heading text-4xl leading-tight">
             {phase.kind === "closed"
               ? "今日机缘已尽"
               : offer
@@ -110,9 +141,9 @@ export function HomeScreen() {
 
       {phase.kind === "altar" ? (
         <div className="flex flex-col gap-5">
-          <FortuneTube warm={ready} />
-          <p className="text-center text-sm text-muted-foreground">
-            摇一摇签筒，接一张今天的小事。
+          <FortuneTube warm={ready} onDraw={requestDraw} />
+          <p className="text-center text-sm leading-relaxed text-muted-foreground">
+            按住签筒，或轻轻摇一摇手机。签会自己飞出来。
           </p>
           {phase.loggedToday ? (
             <p className="text-center text-sm text-primary">
@@ -120,7 +151,7 @@ export function HomeScreen() {
             </p>
           ) : null}
           <Button className="h-12 w-full" onClick={requestDraw}>
-            {phase.loggedToday ? "再求一签" : "求签"}
+            {phase.loggedToday ? "再求一签" : "直接求签"}
           </Button>
         </div>
       ) : null}
@@ -168,6 +199,13 @@ export function HomeScreen() {
                 换签
               </Button>
             ) : null}
+            <Button
+              variant="ghost"
+              className="h-11 w-full text-primary"
+              onClick={() => setHangOpen(true)}
+            >
+              完成后，把小故事挂到广场
+            </Button>
           </div>
         </div>
       ) : null}
@@ -178,6 +216,14 @@ export function HomeScreen() {
           onOpenChange={setStoryOpen}
           drawId={offer.draw.id}
           title={offer.draw.slip.title}
+        />
+      ) : null}
+      {offer && hangOpen ? (
+        <HangPlaque
+          open
+          onOpenChange={setHangOpen}
+          slip={offer.draw.slip}
+          initialStory={stories.find((story) => story.drawId === offer.draw.id)?.note ?? ""}
         />
       ) : null}
     </div>

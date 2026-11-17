@@ -77,6 +77,7 @@ const AppContext = createContext<AppContextValue | null>(null)
 function parseView(hash: string): View {
   if (hash === "#log") return "log"
   if (hash === "#mine") return "mine"
+  if (hash === "#plaza") return "plaza"
   return "draw"
 }
 
@@ -123,7 +124,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [settings, day])
 
   const setView = useCallback((next: View) => {
-    const hash = next === "draw" ? "#draw" : next === "log" ? "#log" : "#mine"
+    const hash =
+      next === "log"
+        ? "#log"
+        : next === "mine"
+          ? "#mine"
+          : next === "plaza"
+            ? "#plaza"
+            : "#draw"
     if (window.location.hash !== hash) {
       window.location.hash = hash
     }

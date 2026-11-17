@@ -8,6 +8,14 @@ export const COMPANIES = ["alone", "child", "friend"] as const
 export type Company = (typeof COMPANIES)[number]
 
 export const CATEGORIES = [
+  "ritual",
+  "rule",
+  "stranger",
+  "secret",
+  "explore",
+  "role",
+  "luck",
+  "adventure",
   "city",
   "kindness",
   "sense",
@@ -25,7 +33,7 @@ export const CATEGORIES = [
 ] as const
 export type Category = (typeof CATEGORIES)[number]
 
-export const RANKS = ["上上签", "上签", "中签"] as const
+export const RANKS = ["上上签", "上签", "中签", "下签"] as const
 export type Rank = (typeof RANKS)[number]
 
 export const DAILY_DRAW_LIMIT = 3
@@ -87,4 +95,4 @@ export type Settings = {
   installHintDismissed: boolean
 }
 
-export type View = "draw" | "log" | "mine"
+export type View = "draw" | "plaza" | "log" | "mine"

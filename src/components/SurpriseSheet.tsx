@@ -59,8 +59,10 @@ export function SurpriseSheet() {
             </Field>
             <Field orientation="horizontal">
               <FieldContent>
-                <FieldLabel htmlFor="sound-on">求签时鸣钟</FieldLabel>
-                <FieldDescription>签筒摇动时有一声轻钟。</FieldDescription>
+                <FieldLabel htmlFor="sound-on">签筒的木鱼与钟</FieldLabel>
+                <FieldDescription>
+                  默认安静。打开后，按住签筒时有木鱼，签文展开时有一声轻钟。
+                </FieldDescription>
               </FieldContent>
               <Switch
                 id="sound-on"

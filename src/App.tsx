@@ -1,7 +1,9 @@
 import { AppNav } from "@/components/AppNav"
 import { HomeScreen } from "@/components/HomeScreen"
 import { MineScreen } from "@/components/MineScreen"
+import { PlazaScreen } from "@/components/PlazaScreen"
 import { Ritual } from "@/components/temple/Ritual"
+import { TempleAtmosphere } from "@/components/temple/Atmosphere"
 import { StoryScreen } from "@/components/StoryScreen"
 import { SurpriseSheet } from "@/components/SurpriseSheet"
 import { Toaster } from "@/components/ui/sonner"
@@ -12,9 +14,10 @@ function Shell() {
 
   return (
     <div className="temple-root relative min-h-svh">
-      <div className="candle-glow" aria-hidden />
-      <main className="relative mx-auto flex min-h-svh w-full max-w-md flex-col px-4 pt-6 pb-28">
+      <TempleAtmosphere />
+      <main className="relative z-10 mx-auto flex min-h-svh w-full max-w-md flex-col px-4 pt-6 pb-28">
         {view === "draw" ? <HomeScreen /> : null}
+        {view === "plaza" ? <PlazaScreen /> : null}
         {view === "log" ? <StoryScreen /> : null}
         {view === "mine" ? <MineScreen /> : null}
       </main>

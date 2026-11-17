@@ -15,7 +15,7 @@ export const defaultSettings = (): Settings => ({
   surpriseEnabled: false,
   windowStart: "10:00",
   windowEnd: "20:00",
-  sound: true,
+  sound: false,
   installHintDismissed: false,
 })
 
@@ -47,7 +47,7 @@ export function loadSettings(): Settings {
       typeof value.windowEnd === "string"
         ? value.windowEnd
         : fallback.windowEnd,
-    sound: value.sound !== false,
+    sound: value.sound === true,
     installHintDismissed: value.installHintDismissed === true,
   }
 }
