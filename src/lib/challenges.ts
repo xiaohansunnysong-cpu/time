@@ -1110,7 +1110,7 @@ const seeds: Seed[] = [
     verse: "相册里有个今天，等你回来",
     title: "翻看今天日期附近的旧照片",
     description: "在相册里找同一天或相近日期的旧照片，挑一张写下当时没注意到的细节。",
-    duration: 10, category: "memory", moods: calm, company: ["alone"],
+    duration: 15, category: "memory", moods: calm, company: ["alone"],
   },
   {
     rank: "上上签",
