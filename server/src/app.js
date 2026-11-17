@@ -8,6 +8,7 @@ import {
   normalizeSlipNumber,
   normalizeSlipText,
   normalizeStory,
+  normalizeWishText,
 } from "./validate.js"
 
 const POST_LIMIT = 5
@@ -65,6 +66,9 @@ export async function migrate(pool) {
   )
   await pool.query("CREATE TABLE IF NOT EXISTS wishes (id UUID PRIMARY KEY, wish_text TEXT NOT NULL, client_id TEXT NOT NULL, claimant_id TEXT, status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'claimed', 'fulfilled')), created_at TIMESTAMPTZ NOT NULL DEFAULT now(), fulfilled_at TIMESTAMPTZ)")
   await pool.query("CREATE INDEX IF NOT EXISTS wishes_feed_idx ON wishes (created_at DESC)")
+  await pool.query("CREATE TABLE IF NOT EXISTS community_slips (id UUID PRIMARY KEY, task_text TEXT NOT NULL, creator_id TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), draw_count INTEGER NOT NULL DEFAULT 0, completed_count INTEGER NOT NULL DEFAULT 0, hidden BOOLEAN NOT NULL DEFAULT FALSE)")
+  await pool.query("CREATE TABLE IF NOT EXISTS community_slip_draws (slip_id UUID NOT NULL REFERENCES community_slips(id) ON DELETE CASCADE, client_id TEXT NOT NULL, drawn_at TIMESTAMPTZ NOT NULL DEFAULT now(), completed_at TIMESTAMPTZ, PRIMARY KEY (slip_id, client_id))")
+  await pool.query("CREATE INDEX IF NOT EXISTS community_slips_feed_idx ON community_slips (created_at DESC)")
 }
 
 function json(res, status, body, origin) {
@@ -380,6 +384,94 @@ export function createApp(pool) {
         json(res, 200, { ok: true }, origin)
         return
       }
+      if (req.method === "GET" && url.pathname === "/api/community-slips") {
+        const result = await pool.query(
+          "SELECT id, task_text, created_at, draw_count, completed_count FROM community_slips WHERE hidden = FALSE ORDER BY created_at DESC LIMIT 30",
+        )
+        json(res, 200, { slips: result.rows.map((row) => ({ id: row.id, text: row.task_text, createdAt: new Date(row.created_at).toISOString(), drawCount: row.draw_count, completedCount: row.completed_count })) }, origin)
+        return
+      }
+      if (req.method === "POST" && url.pathname === "/api/community-slips") {
+        const body = await readBody(req)
+        const task = normalizeWishText(body.text)
+        const visitor = normalizeClientId(body.clientId)
+        const invalid = [task, visitor].find((item) => item.error)
+        if (invalid) { json(res, 400, { error: invalid.error }, origin); return }
+        const quota = await pool.query("SELECT count(*)::int AS count FROM community_slips WHERE creator_id = $1 AND created_at > now() - interval '1 day'", [visitor.text])
+        if (quota.rows[0].count >= 3) { json(res, 429, { error: "今天写签的次数用完了，明天再来" }, origin); return }
+        const inserted = await pool.query(
+          "INSERT INTO community_slips (id, task_text, creator_id) VALUES ($1, $2, $3) RETURNING id, task_text, created_at, draw_count, completed_count",
+          [randomUUID(), task.text, visitor.text],
+        )
+        const row = inserted.rows[0]
+        json(res, 201, { slip: { id: row.id, text: row.task_text, createdAt: new Date(row.created_at).toISOString(), drawCount: row.draw_count, completedCount: row.completed_count } }, origin)
+        return
+      }
+      if (req.method === "POST" && url.pathname === "/api/community-slips/draw") {
+        const body = await readBody(req)
+        const visitor = normalizeClientId(body.clientId)
+        if (visitor.error) { json(res, 400, { error: visitor.error }, origin); return }
+        const client = await pool.connect()
+        try {
+          await client.query("BEGIN")
+          const selected = await client.query(
+            "SELECT s.id, s.task_text, s.created_at FROM community_slips s WHERE s.hidden = FALSE AND s.creator_id <> $1 AND NOT EXISTS (SELECT 1 FROM community_slip_draws d WHERE d.slip_id = s.id AND d.client_id = $1) ORDER BY RANDOM() LIMIT 1",
+            [visitor.text],
+          )
+          if (!selected.rowCount) {
+            await client.query("ROLLBACK")
+            json(res, 404, { error: "签筒里暂时还没有可抽的小事" }, origin)
+            return
+          }
+          const row = selected.rows[0]
+          await client.query("INSERT INTO community_slip_draws (slip_id, client_id) VALUES ($1, $2)", [row.id, visitor.text])
+          const updated = await client.query(
+            "UPDATE community_slips SET draw_count = draw_count + 1 WHERE id = $1 RETURNING draw_count, completed_count",
+            [row.id],
+          )
+          await client.query("COMMIT")
+          json(res, 200, { slip: { id: row.id, text: row.task_text, createdAt: new Date(row.created_at).toISOString(), drawCount: updated.rows[0].draw_count, completedCount: updated.rows[0].completed_count } }, origin)
+        } catch (error) {
+          await client.query("ROLLBACK")
+          throw error
+        } finally {
+          client.release()
+        }
+        return
+      }
+      const communityParts = url.pathname.split("/")
+      const communityId = communityParts[1] === "api" && communityParts[2] === "community-slips" && communityParts[4] === "complete" && /^[0-9a-f-]{36}$/i.test(communityParts[3] || "") ? communityParts[3] : null
+      if (req.method === "POST" && communityId && communityParts.length === 5) {
+        const body = await readBody(req)
+        const visitor = normalizeClientId(body.clientId)
+        if (visitor.error) { json(res, 400, { error: visitor.error }, origin); return }
+        const client = await pool.connect()
+        try {
+          await client.query("BEGIN")
+          const completed = await client.query(
+            "UPDATE community_slip_draws SET completed_at = now() WHERE slip_id = $1 AND client_id = $2 AND completed_at IS NULL RETURNING slip_id",
+            [communityId, visitor.text],
+          )
+          if (!completed.rowCount) {
+            await client.query("ROLLBACK")
+            json(res, 409, { error: "先抽到这支签，完成后才能打卡" }, origin)
+            return
+          }
+          const updated = await client.query(
+            "UPDATE community_slips SET completed_count = completed_count + 1 WHERE id = $1 RETURNING completed_count",
+            [communityId],
+          )
+          await client.query("COMMIT")
+          json(res, 200, { completedCount: updated.rows[0].completed_count }, origin)
+        } catch (error) {
+          await client.query("ROLLBACK")
+          throw error
+        } finally {
+          client.release()
+        }
+        return
+      }
+
       json(res, 404, { error: "没有这条路" }, origin)
     } catch (error) {
       const status = error.status || 503
