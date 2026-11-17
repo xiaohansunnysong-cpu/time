@@ -2,6 +2,10 @@ import type { Challenge, DayState, Draw, Settings, Story } from "@/lib/types"
 import { DAILY_DRAW_LIMIT } from "@/lib/types"
 import { parseMinutes } from "@/lib/format"
 
+export function isTestMode(): boolean {
+  return typeof window !== "undefined" && new URLSearchParams(window.location.search).get("test") === "1"
+}
+
 export function toSlip(challenge: Challenge) {
   return {
     challengeId: challenge.id,
@@ -17,11 +21,11 @@ export function toSlip(challenge: Challenge) {
 }
 
 export function drawsRemaining(day: DayState): number {
-  return Math.max(0, DAILY_DRAW_LIMIT - day.draws.length)
+  return isTestMode() ? Number.POSITIVE_INFINITY : Math.max(0, DAILY_DRAW_LIMIT - day.draws.length)
 }
 
 export function canDraw(day: DayState): boolean {
-  return day.draws.length < DAILY_DRAW_LIMIT
+  return isTestMode() || day.draws.length < DAILY_DRAW_LIMIT
 }
 
 export type Phase =
