@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card"
 import { HangPlaque } from "@/components/HangPlaque"
 import { StorySheet } from "@/components/StorySheet"
-import { canDraw, phaseOf, surpriseIsReady } from "@/lib/draw"
+import { canDraw, isTestMode, phaseOf, surpriseIsReady } from "@/lib/draw"
 import { formatCountdown, msUntilLocalMidnight } from "@/lib/format"
 import { useApp } from "@/state/app-state"
 import { BellIcon } from "lucide-react"
@@ -30,6 +30,7 @@ export function HomeScreen() {
     setSurpriseOpen,
     setView,
   } = useApp()
+  const testMode = isTestMode()
   const phase = phaseOf(day, stories)
   const remainingDraw = canDraw(day)
   const ready = surpriseIsReady(day, settings, now)
@@ -94,6 +95,13 @@ export function HomeScreen() {
           <BellIcon />
         </Button>
       </header>
+
+      {testMode ? (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#e8cb72]/35 bg-[#e8cb72]/10 px-3 py-2 text-sm" role="status">
+          <span className="text-[#f1e8ce]">测试模式 · 今日求签次数不限</span>
+          <a className="min-h-10 inline-flex items-center rounded-full px-3 text-xs text-[#e8cb72] underline underline-offset-4" href={window.location.pathname}>退出测试</a>
+        </div>
+      ) : null}
 
       <Incense used={day.draws.length} />
 
