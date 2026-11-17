@@ -236,27 +236,16 @@ const VERSE = {
   ],
 }
 
-const MISCHIEF = [
-  "小逆一签，专管有趣",
-  "这支不主吉凶，只主偏航",
-  "下签也发光，只是斜着",
-  "歪一点，故事才开始",
-  "不算吉利，刚刚好顽皮",
-  "这签故意有点歪",
-]
-
-const RANKS = ["上上签", "上签", "中签", "下签"]
+const RANKS = ["上上签", "上签", "中签"]
 
 function rankFor(n) {
   const slot = n % 10
-  if (slot === 0) return "下签"
   if (slot <= 3) return "上上签"
   if (slot <= 6) return "上签"
   return "中签"
 }
 
-function verseFor(category, title, rank) {
-  if (rank === "下签") return MISCHIEF[hash(title) % MISCHIEF.length]
+function verseFor(category, title) {
   const bank = VERSE[category] ?? VERSE.ritual
   return bank[hash(title) % bank.length]
 }
