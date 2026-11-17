@@ -33,7 +33,7 @@ export const CATEGORIES = [
 ] as const
 export type Category = (typeof CATEGORIES)[number]
 
-export const RANKS = ["上上签", "上签", "中签", "下签"] as const
+export const RANKS = ["上上签", "上签", "中签"] as const
 export type Rank = (typeof RANKS)[number]
 
 export const DAILY_DRAW_LIMIT = 3
