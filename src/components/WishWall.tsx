@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { getClientId } from "@/lib/client"
 import { API_BASE } from "@/lib/plaza"
 
-type Wish = { id: string; text: string; status: "open" | "claimed" | "fulfilled"; claimedByMe: boolean }
+type Wish = { id: string; text: string; status: "open" | "claimed" | "fulfilled"; claimedByMe: boolean; source?: "starter" | "community" }
 
 const WISH_IDEAS = [
   "希望有人推荐一首适合散步时听的歌。",
@@ -129,7 +129,8 @@ export function WishWall() {
               <span className="mt-2 inline-block text-xs text-[#e8cb72]">点开查看并回应 ›</span>
             </button>
             <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs text-[#989180]">{w.status === "fulfilled" ? "✨ 已还愿" : w.status === "claimed" ? (w.claimedByMe ? "你已认领" : "有人正在帮忙") : "等待有缘人"}</span>
+              <span className="text-xs text-[#989180]">{w.source === "starter" ? "广场发起" : "匿名心愿"} · {w.status === "fulfilled" ? "✨ 已还愿" : w.status === "claimed" ? (w.claimedByMe ? "你已认领" : "有人正在帮忙") : "等待有缘人"}</span>
+              <span className="sr-only">{w.status === "fulfilled" ? "✨ 已还愿" : w.status === "claimed" ? (w.claimedByMe ? "你已认领" : "有人正在帮忙") : "等待有缘人"}</span>
               {w.status === "open" ? <Button variant="outline" className="min-h-10" onClick={() => void act(w.id, "claim")}>我来帮你</Button> : null}
               {w.status === "claimed" && w.claimedByMe ? <Button variant="outline" className="min-h-10" onClick={() => void act(w.id, "fulfill")}>我已完成</Button> : null}
             </div>

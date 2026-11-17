@@ -13,6 +13,19 @@ import {
 
 const POST_LIMIT = 5
 
+const STARTER_WISHES = [
+  "愿有缘人今天买一束花送给自己，并拍下最喜欢的一枝。",
+  "愿有缘人坐一趟没坐过的公交，两三站后下来走走，再按熟悉路线回家。",
+  "愿有缘人给亲近的人做一顿简单的饭，一起好好吃完。",
+  "愿有缘人去看一幅曾经路过的名画，认真找出一个小细节。",
+  "愿有缘人尝一杯从没点过的饮品，给第一口起个名字。",
+  "愿有缘人给一个月后的自己写张便条，留一句鼓励。",
+  "愿有缘人闭眼听歌单里的第二首歌，记下歌带来的第一个画面。",
+  "愿有缘人走一条没走过的回家路，找三样平时没注意的东西。",
+  "愿有缘人认真夸自己一件具体的小事，不敷衍。",
+  "愿有缘人给一段日常风景拍张电影海报感的照片，再取个片名。",
+]
+
 export function poolConfig(connectionString) {
   const local = /localhost|127\.0\.0\.1/.test(connectionString)
   return {
@@ -65,6 +78,14 @@ export async function migrate(pool) {
     "CREATE INDEX IF NOT EXISTS posts_ip_day_idx ON posts (ip_hash, created_at)",
   )
   await pool.query("CREATE TABLE IF NOT EXISTS wishes (id UUID PRIMARY KEY, wish_text TEXT NOT NULL, client_id TEXT NOT NULL, claimant_id TEXT, status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'claimed', 'fulfilled')), created_at TIMESTAMPTZ NOT NULL DEFAULT now(), fulfilled_at TIMESTAMPTZ)")
+  await pool.query("ALTER TABLE wishes ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'community'")
+  for (const [index, wishText] of STARTER_WISHES.entries()) {
+    const seedId = `00000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`
+    await pool.query(
+      "INSERT INTO wishes (id, wish_text, client_id, source) SELECT $1, $2, $3, 'starter' WHERE NOT EXISTS (SELECT 1 FROM wishes WHERE wish_text = $2) ON CONFLICT (id) DO NOTHING",
+      [seedId, wishText, "ffffffff-ffff-4fff-8fff-ffffffffffff"],
+    )
+  }
   await pool.query("CREATE INDEX IF NOT EXISTS wishes_feed_idx ON wishes (created_at DESC)")
   await pool.query("CREATE TABLE IF NOT EXISTS community_slips (id UUID PRIMARY KEY, task_text TEXT NOT NULL, creator_id TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), draw_count INTEGER NOT NULL DEFAULT 0, completed_count INTEGER NOT NULL DEFAULT 0, hidden BOOLEAN NOT NULL DEFAULT FALSE)")
   await pool.query("CREATE TABLE IF NOT EXISTS community_slip_draws (slip_id UUID NOT NULL REFERENCES community_slips(id) ON DELETE CASCADE, client_id TEXT NOT NULL, drawn_at TIMESTAMPTZ NOT NULL DEFAULT now(), completed_at TIMESTAMPTZ, PRIMARY KEY (slip_id, client_id))")
@@ -352,10 +373,10 @@ export function createApp(pool) {
         const visitor = raw ? normalizeClientId(raw) : { text: "" }
         if (visitor.error) { json(res, 400, { error: visitor.error }, origin); return }
         const result = await pool.query(
-          "SELECT id, wish_text, status, created_at, (claimant_id = $1 AND $1 <> '') AS claimed_by_me FROM wishes WHERE status <> 'fulfilled' OR created_at > now() - interval '14 days' ORDER BY (status = 'fulfilled') ASC, created_at DESC LIMIT 50",
+          "SELECT id, wish_text, status, source, created_at, (claimant_id = $1 AND $1 <> '') AS claimed_by_me FROM wishes WHERE status <> 'fulfilled' OR created_at > now() - interval '14 days' ORDER BY (status = 'fulfilled') ASC, created_at DESC LIMIT 50",
           [visitor.text],
         )
-        json(res, 200, { wishes: result.rows.map((row) => ({ id: row.id, text: row.wish_text, status: row.status, createdAt: new Date(row.created_at).toISOString(), claimedByMe: row.claimed_by_me === true })) }, origin)
+        json(res, 200, { wishes: result.rows.map((row) => ({ id: row.id, text: row.wish_text, status: row.status, source: row.source, createdAt: new Date(row.created_at).toISOString(), claimedByMe: row.claimed_by_me === true })) }, origin)
         return
       }
       if (req.method === "POST" && url.pathname === "/api/wishes") {
