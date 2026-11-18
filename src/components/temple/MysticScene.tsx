@@ -41,7 +41,7 @@ export function MysticScene({ now }: { now: number }) {
     <section className="mystic-scene" aria-label="今日寺庙时辰与趣味黄历">
       <img
         className="mystic-scene-image"
-        src="/images/mystic-temple.jpg"
+        src="/images/guanyin-incense.jpg"
         alt="云雾环绕的中国古寺，殿内供奉观音，前景香炉升起袅袅香烟，竹叶与飞燕掠过天际。"
         fetchPriority="high"
       />

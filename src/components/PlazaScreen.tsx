@@ -188,6 +188,18 @@ export function PlazaScreen() {
       </header>
 
       <div
+        className="relative isolate h-28 overflow-hidden rounded-2xl border border-[#e8cb72]/20 bg-cover bg-center shadow-[0_12px_32px_rgba(0,0,0,.28)]"
+        style={{ backgroundImage: "linear-gradient(90deg, rgba(8,12,28,.72), rgba(8,12,28,.08)), url('/images/wish-tree-dusk.jpg')" }}
+        role="img"
+        aria-label="夜色竹枝间挂着心愿签，远处灯火初上"
+      >
+        <div className="absolute inset-x-4 bottom-3 text-[#fff2d0]">
+          <p className="font-heading text-lg tracking-[0.16em]">把心愿挂上去</p>
+          <p className="mt-0.5 text-xs text-white/80">也许今晚，就有人替你接住它</p>
+        </div>
+      </div>
+
+      <div
         role="group"
         aria-label="切换广场内容"
         className="grid grid-cols-3 gap-1 rounded-2xl border border-white/10 bg-black/20 p-1"
