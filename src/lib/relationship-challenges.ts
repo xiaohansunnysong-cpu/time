@@ -80,7 +80,6 @@ export const RELATIONSHIP_TASKS: Record<Relationship, Task[]> = {
     task("给待办清单起个冒险标题", "把自己的待办清单命名为《文件夹山脉远征》之类，不展示内容也能完成。", 5, "create", "今日任务，获得史诗配乐"),
     task("用一句话给午休做宣传", "给自己的午休写句夸张广告词，例如‘十分钟，重启人类系统’；不用打扰同事。", 5, "create", "休息时间值得拥有广告位"),
   ],
-  ],
 }
 
 type Recipe = { title: (scene: string) => string; description: (scene: string) => string; duration: Duration; category: Category; verse: string }
@@ -163,7 +162,6 @@ const recipes: Record<Relationship, Recipe[]> = {
     { title: x => `和同事交换一个冷笑话`, description: x => `如果对方正好有空，各讲一个无害冷笑话；对方忙就自己收藏一个。`, duration: 5, category: "friend", verse: "冷笑话不进会议纪要" },
     { title: x => `给今天的茶水间写个标题`, description: x => `给自己的饮品时间取个轻松标题，例如‘人类补水维护站’，不用公开张贴。`, duration: 5, category: "create", verse: "休息也有节目名称" },
     { title: x => `给${x}安排一次迷你发布会`, description: x => `为自己的笔、键盘或文件夹做十秒发布会；不拍同事、不要求围观。`, duration: 5, category: "role", verse: "主持人和嘉宾都是你" },
-  ],
   ],
 }
 
