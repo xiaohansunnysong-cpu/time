@@ -26,6 +26,58 @@ const STARTER_WISHES = [
   "愿有缘人给一段日常风景拍张电影海报感的照片，再取个片名。",
 ]
 
+const STARTER_COMMUNITY_SLIPS = [
+  "模仿电视剧里刚听到惊天秘密的人，沉默三秒后说：‘原来如此。’",
+  "模仿电影主角慢动作进场，走五步就够。",
+  "模仿刚拿到大奖的人，发表一段10秒获奖感言。",
+  "模仿努力保持礼貌、但已经快迟到的人。",
+  "模仿看到冰箱空了，却还不肯放弃希望的人。",
+  "模仿第一次喝到特别酸的饮料，还要假装很好喝。",
+  "用严肃新闻主播的语气播报：‘我刚刚找到遥控器。’",
+  "模仿宫廷剧里受了委屈、但努力端庄的人。",
+  "模仿侦探发现关键线索：‘这件事，果然没那么简单。’",
+  "模仿电影反派，宣布自己要去洗碗。",
+  "模仿体育解说员，解说自己成功坐下休息。",
+  "模仿刚发现手机只剩1%电量的人。",
+  "模仿销售员，认真推销世界上最普通的杯子。",
+  "模仿机器人第一次学会说：‘我饿了。’",
+  "模仿刚睡醒、还没完全加载完成的人。",
+  "模仿看到熟人却一时想不起名字，努力自然打招呼的人。",
+  "模仿正在等外卖、每隔一分钟看一次门口的人。",
+  "模仿天气预报员，预报自己今天的心情。",
+  "模仿发现最后一块蛋糕还在的人。",
+  "模仿广告演员，介绍一双普通袜子。",
+  "模仿刚听到‘今天不用加班’的人。",
+  "模仿老板宣布：‘今天的会议缩短到一分钟。’",
+  "模仿第一次走进高级餐厅、努力装作很熟悉的人。",
+  "模仿刚收到中奖消息、努力保持冷静的人。",
+  "用古装侠客的语气，告别家里的拖鞋，准备出门远行。",
+  "模仿电影主角发现忘带钥匙，站在门口思考人生。",
+  "模仿正在和闹钟谈判的人：‘再给我五分钟。’",
+  "模仿主播，介绍一张椅子为什么值得买。",
+  "模仿一个第一次学会打喷嚏的人。",
+  "模仿偷偷吃零食、突然听到脚步声的人。",
+  "模仿咖啡师，认真介绍一杯白开水。",
+  "模仿悬疑片主角，发现桌上的东西被人移动了一厘米。",
+  "模仿刚发现周末已经结束的人。",
+  "模仿努力记住‘我进房间是来干什么的’的人。",
+  "模仿主持人，隆重介绍今天的主角——你自己。",
+  "模仿一只第一次看见吸尘器的猫。",
+  "模仿准备拍证件照、却不知道该怎么笑的人。",
+  "模仿电影英雄，拯救一只快掉到地上的袜子。",
+  "模仿刚听到‘今晚吃你最爱吃的菜’的人。",
+  "模仿正在给植物做工作汇报的人。",
+  "模仿认真解释‘我真的只看了五分钟手机’的人。",
+  "用贵族语气，模仿第一次尝试吃方便面的人。",
+  "模仿正在为迟到找理由、却越说越心虚的人。",
+  "模仿电影配音员，给自己走路的画面配旁白。",
+  "模仿侦探，寻找刚刚放下的眼镜。",
+  "模仿运动员，完成把垃圾扔进垃圾桶后的胜利庆祝。",
+  "模仿收到朋友消息、想秒回又故意等一会儿的人。",
+  "模仿深夜突然想起明天有事的人。",
+  "模仿你喜欢的电影角色说一句经典台词，再用同样语气说：‘我先去倒杯水。’",
+]
+
 export function poolConfig(connectionString) {
   const local = /localhost|127\.0\.0\.1/.test(connectionString)
   return {
@@ -90,6 +142,13 @@ export async function migrate(pool) {
   await pool.query("CREATE TABLE IF NOT EXISTS community_slips (id UUID PRIMARY KEY, task_text TEXT NOT NULL, creator_id TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), draw_count INTEGER NOT NULL DEFAULT 0, completed_count INTEGER NOT NULL DEFAULT 0, hidden BOOLEAN NOT NULL DEFAULT FALSE)")
   await pool.query("CREATE TABLE IF NOT EXISTS community_slip_draws (slip_id UUID NOT NULL REFERENCES community_slips(id) ON DELETE CASCADE, client_id TEXT NOT NULL, drawn_at TIMESTAMPTZ NOT NULL DEFAULT now(), completed_at TIMESTAMPTZ, PRIMARY KEY (slip_id, client_id))")
   await pool.query("CREATE INDEX IF NOT EXISTS community_slips_feed_idx ON community_slips (created_at DESC)")
+  for (const [index, taskText] of STARTER_COMMUNITY_SLIPS.entries()) {
+    const seedId = `00000000-0000-4000-8001-${String(index + 1).padStart(12, "0")}`
+    await pool.query(
+      "INSERT INTO community_slips (id, task_text, creator_id) SELECT $1, $2, $3 WHERE NOT EXISTS (SELECT 1 FROM community_slips WHERE task_text = $2) ON CONFLICT (id) DO NOTHING",
+      [seedId, taskText, "ffffffff-ffff-4fff-8fff-ffffffffffff"],
+    )
+  }
 }
 
 function json(res, status, body, origin) {
