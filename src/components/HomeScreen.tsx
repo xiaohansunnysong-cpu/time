@@ -174,7 +174,7 @@ export function HomeScreen() {
 
       <DailyCareCard />
 
-      <Incense used={day.draws.length} />
+      <Incense used={day.draws.length} testMode={testMode} />
 
       {ready && phase.kind === "altar" ? (
         <Alert>
