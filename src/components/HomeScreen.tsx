@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { HangPlaque } from "@/components/HangPlaque"
+import { DailyCareCard } from "@/components/DailyCareCard"
 import { StorySheet } from "@/components/StorySheet"
 import { canDraw, isTestMode, phaseOf, surpriseIsReady } from "@/lib/draw"
 import { formatCountdown, msUntilLocalMidnight } from "@/lib/format"
@@ -137,6 +138,8 @@ export function HomeScreen() {
       ) : null}
 
       <MysticScene now={now} />
+
+      <DailyCareCard />
 
       <Incense used={day.draws.length} />
 
