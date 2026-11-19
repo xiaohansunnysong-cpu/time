@@ -145,8 +145,6 @@ export function HomeScreen() {
         </div>
       ) : null}
 
-      <MysticScene now={now} />
-
       <section className="rounded-2xl border border-white/10 bg-[#111522]/85 p-3.5">
           <div className="flex items-end justify-between gap-2">
             <div>
@@ -170,6 +168,9 @@ export function HomeScreen() {
             ))}
           </div>
         </section>
+
+
+      <MysticScene now={now} />
 
       <DailyCareCard />
 
