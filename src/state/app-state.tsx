@@ -11,6 +11,7 @@ import {
 import { toast } from "sonner"
 
 import { playRitual, playSoftBell } from "@/lib/audio"
+import { RELATIONSHIP_TASKS } from "@/lib/relationship-challenges"
 import {
   canDraw,
   emptyDay,
@@ -39,6 +40,7 @@ import {
 import type {
   Challenge,
   DayState,
+  Relationship,
   Settings,
   SlipSnapshot,
   Story,
@@ -59,7 +61,7 @@ type AppContextValue = {
   setView: (view: View) => void
   setSurpriseOpen: (open: boolean) => void
   updateSettings: (patch: Partial<Settings>) => void
-  requestDraw: () => void
+  requestDraw: (relationship?: Relationship) => void
   endRitual: () => void
   acceptDraw: (drawId: string) => void
   saveStory: (input: {
@@ -215,7 +217,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
-  const requestDraw = useCallback(() => {
+  const requestDraw = useCallback((relationship?: Relationship) => {
     if (drawing.current) return
     const currentDay = dayRef.current
     if (!canDraw(currentDay)) {
@@ -225,6 +227,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
     drawing.current = true
     void (async () => {
       try {
+        if (relationship) {
+          const pool = RELATIONSHIP_TASKS[relationship]
+          const alreadyDrawn = new Set(currentDay.draws.map((item) => item.slip.challengeId))
+          const fresh = pool.filter((_, index) => !alreadyDrawn.has(`bond-${relationship}-${index + 1}`))
+          const choices = fresh.length > 0 ? fresh : pool
+          const index = Math.floor(Math.random() * choices.length)
+          const selected = choices[index]!
+          const originalIndex = pool.indexOf(selected)
+          const slip = toSlip({
+            ...selected,
+            id: `bond-${relationship}-${originalIndex + 1}`,
+            number: 1000 + ["self", "family", "parent-child", "friend", "lover", "colleague"].indexOf(relationship) * 100 + originalIndex + 1,
+            rank: "上签",
+            moods: ["lazy", "steady", "adventure"],
+            company: ["alone", "friend", "child"],
+          })
+          const nextDay: DayState = {
+            ...dayRef.current,
+            draws: [...dayRef.current.draws, { id: crypto.randomUUID(), at: Date.now(), slip }],
+            acceptedDrawId: null,
+          }
+          dayRef.current = nextDay
+          setDay(nextDay)
+          saveDay(nextDay)
+          setRitual({ slip })
+          if (settingsRef.current.sound) playRitual()
+          drawing.current = false
+          return
+        }
+
         const freshCustom = custom.filter(
           (challenge) =>
             !currentDay.draws.some(

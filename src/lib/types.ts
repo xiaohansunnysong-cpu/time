@@ -7,6 +7,9 @@ export type Mood = (typeof MOODS)[number]
 export const COMPANIES = ["alone", "child", "friend"] as const
 export type Company = (typeof COMPANIES)[number]
 
+export const RELATIONSHIP_IDS = ["self", "family", "parent-child", "friend", "lover", "colleague"] as const
+export type Relationship = (typeof RELATIONSHIP_IDS)[number]
+
 export const CATEGORIES = [
   "ritual",
   "rule",

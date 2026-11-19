@@ -19,6 +19,8 @@ import { StorySheet } from "@/components/StorySheet"
 import { canDraw, isTestMode, phaseOf, surpriseIsReady } from "@/lib/draw"
 import { formatCountdown, msUntilLocalMidnight } from "@/lib/format"
 import { useApp } from "@/state/app-state"
+import { RELATIONSHIPS } from "@/lib/relationship-challenges"
+import type { Relationship } from "@/lib/types"
 import { BellIcon, Share2 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -39,6 +41,12 @@ export function HomeScreen() {
   const ready = surpriseIsReady(day, settings, now)
   const [storyOpen, setStoryOpen] = useState(false)
   const [hangOpen, setHangOpen] = useState(false)
+  const [relationship, setRelationship] = useState<Relationship>(() => {
+    try {
+      const saved = localStorage.getItem("tbb.relationship.v1")
+      return RELATIONSHIPS.some((item) => item.id === saved) ? saved as Relationship : "self"
+    } catch { return "self" }
+  })
   const left = formatCountdown(msUntilLocalMidnight(now))
 
   useEffect(() => {
@@ -63,12 +71,12 @@ export function HomeScreen() {
       previous = { x: acceleration.x, y: acceleration.y, z: acceleration.z }
       if (delta > 24 && Date.now() - last > 1800) {
         last = Date.now()
-        requestDraw()
+        requestDraw(relationship)
       }
     }
     window.addEventListener("devicemotion", onMotion)
     return () => window.removeEventListener("devicemotion", onMotion)
-  }, [phase.kind, requestDraw])
+  }, [phase.kind, requestDraw, relationship])
 
   const offer = phase.kind === "offer" ? phase : null
 
@@ -139,6 +147,32 @@ export function HomeScreen() {
 
       <MysticScene now={now} />
 
+      {phase.kind === "altar" ? (
+        <section className="rounded-2xl border border-white/10 bg-[#111522]/85 p-3.5">
+          <div className="flex items-end justify-between gap-2">
+            <div>
+              <p className="text-[11px] tracking-[0.2em] text-[#e8cb72]">今日想和谁结一段缘？</p>
+              <p className="mt-1 text-xs text-muted-foreground">选一个关系，签筒只从这类任务里抽</p>
+            </div>
+            <span className="text-xs text-[#c9bea7]">{RELATIONSHIPS.find((item) => item.id === relationship)?.hint}</span>
+          </div>
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            {RELATIONSHIPS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                aria-pressed={relationship === item.id}
+                onClick={() => {
+                  setRelationship(item.id)
+                  try { localStorage.setItem("tbb.relationship.v1", item.id) } catch { /* local save is optional */ }
+                }}
+                className={`min-h-10 rounded-xl border text-sm transition-colors ${relationship === item.id ? "border-[#e8cb72] bg-[#e8cb72]/15 text-[#f4d98f]" : "border-white/10 text-[#c9bea7] hover:bg-white/5"}`}
+              >{item.label}</button>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <DailyCareCard />
 
       <Incense used={day.draws.length} />
@@ -187,7 +221,7 @@ export function HomeScreen() {
 
       {phase.kind === "altar" ? (
         <div className="flex flex-col gap-5">
-          <FortuneTube warm={ready} onDraw={requestDraw} />
+          <FortuneTube warm={ready} onDraw={() => requestDraw(relationship)} />
           <p className="text-center text-sm leading-relaxed text-muted-foreground">
             按住签筒，或轻轻摇一摇手机。签会自己飞出来。
           </p>
@@ -196,7 +230,7 @@ export function HomeScreen() {
               上一签已收进缘分日志。香还剩着，可以再求。
             </p>
           ) : null}
-          <Button className="h-12 w-full" onClick={requestDraw}>
+          <Button className="h-12 w-full" onClick={() => requestDraw(relationship)}>
             {phase.loggedToday ? "再求一签" : "直接求签"}
           </Button>
         </div>
@@ -240,7 +274,7 @@ export function HomeScreen() {
               <Button
                 variant="outline"
                 className="h-12 w-full"
-                onClick={requestDraw}
+                onClick={() => requestDraw(relationship)}
               >
                 换签
               </Button>
