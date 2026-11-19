@@ -147,8 +147,7 @@ export function HomeScreen() {
 
       <MysticScene now={now} />
 
-      {phase.kind === "altar" ? (
-        <section className="rounded-2xl border border-white/10 bg-[#111522]/85 p-3.5">
+      <section className="rounded-2xl border border-white/10 bg-[#111522]/85 p-3.5">
           <div className="flex items-end justify-between gap-2">
             <div>
               <p className="text-[11px] tracking-[0.2em] text-[#e8cb72]">今日想和谁结一段缘？</p>
@@ -171,7 +170,6 @@ export function HomeScreen() {
             ))}
           </div>
         </section>
-      ) : null}
 
       <DailyCareCard />
 
